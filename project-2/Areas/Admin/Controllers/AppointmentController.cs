@@ -5,9 +5,11 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using project_2.Data;
 using project_2.Extenstions;
+using project_2.Helpers.Email;
 using project_2.Models;
 using project_2.Models.Repositories;
 using project_2.ViewModels;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace project_2.Areas.Admin.Controllers
 {
@@ -18,12 +20,14 @@ namespace project_2.Areas.Admin.Controllers
         IRepository<Appointment> repo;
         IRepository<Schedule> schedulerepo;
         DataDbContext dbContext;
+        IEmailSender emailSender;
 
-        public AppointmentController(IRepository<Appointment> repo, DataDbContext dbContext, IRepository<Schedule> schedulerepo)
+        public AppointmentController(IRepository<Appointment> repo, DataDbContext dbContext, IRepository<Schedule> schedulerepo, IEmailSender emailSender)
         {
             this.repo = repo;
             this.dbContext = dbContext;
             this.schedulerepo = schedulerepo;
+            this.emailSender = emailSender;
         }
         private List<SelectListItem> GenerateSlots(
         TimeSpan start,
@@ -82,11 +86,6 @@ namespace project_2.Areas.Admin.Controllers
             }).ToList();
             ViewBag.ScheduleDates = Scheduler;
             return View(data);
-        }
-        public IActionResult ViewAppointmentw()
-        {
-
-            return View();
         }
         public IActionResult SetSchedule()
         {
@@ -149,22 +148,34 @@ namespace project_2.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public IActionResult EditApt([FromBody] AppointmentViewModel viewModel)
+        public async Task<IActionResult> EditApt([FromBody] AppointmentViewModel viewModel)
         {
             if (ModelState.IsValid)
             {
+
                 var data = viewModel.ToModel();
+                var oldModel = repo.Get(viewModel.AppointmentId);
+                data.Schedule = schedulerepo.Get(data.ScheduleId);
+                oldModel.Schedule = schedulerepo.Get(oldModel.ScheduleId);
+                string subject = "Appointment changed";
+                string body = $"Hello {data.PatientName} your appointment for: {oldModel.Subject} on {oldModel.Schedule.Date} at {oldModel.SlotStartTime}\n has been changed for: {data.Subject} on {data.Schedule.Date} at {data.SlotStartTime}";
                 repo.Edit(data);
+                await emailSender.SendEmailAsync(data.Email, subject, body);
                 return Ok();
             }
             else
                 return BadRequest();
         }
         [HttpPost]
-        public IActionResult DeleteApt(int id)
+        public async Task<IActionResult> DeleteApt(int id)
         {
             if (ModelState.IsValid)
             {
+                var data = repo.Get(id);
+                data.Schedule = schedulerepo.Get(data.ScheduleId);
+                string subject = "Appointment Removed";
+                string body = $"Hello {data.PatientName} your appointment for: {data.Subject} on {data.Schedule.Date} at {data.SlotStartTime} has been remove please contact the Dental Center for more info";
+                await emailSender.SendEmailAsync(data.Email, subject, body);
                 repo.Delete(id);
                 return Ok();
             }
