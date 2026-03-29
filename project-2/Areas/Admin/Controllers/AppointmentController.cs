@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using project_2.Data;
 using project_2.Extenstions;
 using project_2.Helpers.Email;
+using project_2.Helpers.ImageHelpers;
 using project_2.Models;
 using project_2.Models.Repositories;
 using project_2.ViewModels;
@@ -19,15 +20,19 @@ namespace project_2.Areas.Admin.Controllers
     {
         IRepository<Appointment> repo;
         IRepository<Schedule> schedulerepo;
+        IRepository<Dentist> dentistrepo;
         DataDbContext dbContext;
         IEmailSender emailSender;
+        IImageHelper imageHelper;
 
-        public AppointmentController(IRepository<Appointment> repo, DataDbContext dbContext, IRepository<Schedule> schedulerepo, IEmailSender emailSender)
+        public AppointmentController(IRepository<Appointment> repo, DataDbContext dbContext, IRepository<Schedule> schedulerepo, IEmailSender emailSender, IRepository<Dentist> dentistrepo, IImageHelper imageHelper)
         {
             this.repo = repo;
             this.dbContext = dbContext;
             this.schedulerepo = schedulerepo;
             this.emailSender = emailSender;
+            this.dentistrepo = dentistrepo;
+            this.imageHelper = imageHelper;
         }
         private List<SelectListItem> GenerateSlots(
         TimeSpan start,
@@ -113,6 +118,36 @@ namespace project_2.Areas.Admin.Controllers
             };
             data.Status = true;
             return View(data);
+        }
+        
+        public IActionResult InfoPage()
+        {
+            var data = dentistrepo.GetAll().FirstOrDefault();
+            return View(data.ToViewModel());
+
+        }
+        [HttpPost]
+        public IActionResult InfoPage(DentistViewModel viewmodel)
+        {
+            if (ModelState.IsValid)
+            {
+                var existingInfo = dentistrepo.GetAll().FirstOrDefault();
+                viewmodel.DentistImage = imageHelper.SaveImages(viewmodel.File, viewmodel.DentistImage, "Images");
+                if (existingInfo == null)
+                    dentistrepo.Add(viewmodel.ToModel());
+                else
+                {
+                    existingInfo.Name = viewmodel.Name;
+                    existingInfo.PhoneNumber = viewmodel.PhoneNumber;
+                    existingInfo.Experience = viewmodel.Experience;
+                    existingInfo.Collage = viewmodel.Collage;
+                    existingInfo.DentistImage = viewmodel.DentistImage;
+                    existingInfo.DentistImage = imageHelper.SaveImages(viewmodel.File, viewmodel.DentistImage, "Images");
+                    dentistrepo.Edit(existingInfo);
+                }
+                return RedirectToAction("InfoPage");
+            }
+            return View("InfoPage", viewmodel);
         }
 
         [HttpPost]

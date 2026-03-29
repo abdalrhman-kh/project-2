@@ -7,6 +7,10 @@ namespace project_2.Extenstions
     {
         public static DentistViewModel ToViewModel(this Dentist model)
         {
+            if(model == null)
+            {
+                return new DentistViewModel();
+            }
             return new DentistViewModel
             {
                 DentistId = model.Id,
