@@ -18,7 +18,7 @@ namespace project_2.Extenstions
                 Experience = model.Experience,
                 Collage = model.Collage,
                 PhoneNumber = model.PhoneNumber,
-                DentistImage = model.DentistImage
+                DentistImage = model.DentistImage,
             };
         }
         public static Dentist ToModel(this DentistViewModel viewmodel)

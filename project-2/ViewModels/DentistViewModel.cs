@@ -14,6 +14,6 @@ namespace project_2.ViewModels
         public String PhoneNumber { get; set; }
         [ValidateNever]
         public String DentistImage { get; set; }
-        public IFormFile File { get; set; }
+        public IFormFile? File { get; set; }
     }
 }
