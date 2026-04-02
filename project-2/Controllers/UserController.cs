@@ -2,8 +2,10 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
+using project_2.Data;
 using project_2.Extenstions;
 using project_2.Helpers.Email;
 using project_2.Helpers.OTPHelper;
@@ -17,15 +19,17 @@ namespace project_2.Controllers
     {
         IRepository<Appointment> repo;
         IRepository<Schedule> repoSchedule;
+        DataDbContext dbContext;
         IEmailSender emailSender;
         IOTPHelper otphelper;
 
-        public UserController(IRepository<Appointment> repo, IRepository<Schedule> repoSchedule, IEmailSender emailSender, IOTPHelper otphelper)
+        public UserController(IRepository<Appointment> repo, IRepository<Schedule> repoSchedule, IEmailSender emailSender, IOTPHelper otphelper, DataDbContext dbContext)
         {
             this.repo = repo;
             this.repoSchedule = repoSchedule;
             this.emailSender = emailSender;
             this.otphelper = otphelper;
+            this.dbContext = dbContext;
         }
 
         private List<SelectListItem> GenerateSlots(
@@ -72,12 +76,6 @@ namespace project_2.Controllers
                 },
                 AvailableSlots = new List<SelectListItem>(),
             };
-            var Scheduler = repoSchedule.GetAll().Where(s => s.Status).Select(s => new
-            {
-                id = s.Id,
-                date = s.Date.ToString("yyyy-MM-dd")
-            }).ToList();
-            ViewBag.ScheduleDates = Scheduler;
             return View(data);
         }
         [HttpPost]
@@ -86,9 +84,10 @@ namespace project_2.Controllers
         {
             try
             {
-                var isTaken = repo.GetAll().Any(x=>x.ScheduleId == collection.ScheduleId && x.SlotStartTime == collection.SlotStartTime && x.Status == collection.Status);
+                var isTaken = repo.GetAll().Any(x=>x.ScheduleId == collection.ScheduleId && x.SlotStartTime.ToString() == collection.SlotStartTimeString + ":00");
                 if (isTaken) {
                     TempData["ErrorMessage"] = "This time slot had already been taken, please select another.";
+                    return RedirectToAction(nameof(Index));
                 }
                 repo.Add(collection.ToModel());
                 TempData["SuccessMessage"] = "Your appointment has been booked successfully.";
@@ -170,27 +169,25 @@ namespace project_2.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        //[HttpGet]
-        //public async Task<IActionResult> GetMyAppointments(String email)
-        //{
-        //    if (String.IsNullOrEmpty(email))
-        //        return BadRequest("Email and phone number are required");
-        //    var Appointments = repo.GetAll().Where(x => x.Email == email ).ToList();
-        //    if(Appointments.Count == 0)
-        //        return BadRequest("No appointments found");
-        //    List<AppointmentViewModel> AppointmentList = new List<AppointmentViewModel>();
-        //    foreach(var item in Appointments)
-        //    {
-        //        var obj = new AppointmentViewModel
-        //        {
-        //            Subject = item.Subject,
-        //            PatientName = item.PatientName,
-        //            StartTime = repoSchedule.Get(item.ScheduleId).Date.ToDateTime(TimeOnly.FromTimeSpan(item.SlotStartTime)),
-        //            EndTime = repoSchedule.Get(item.ScheduleId).Date.ToDateTime(TimeOnly.FromTimeSpan(item.SlotStartTime).AddHours(1)),
-        //        };
-        //        AppointmentList.Add(obj);
-        //    }
-        //    return Json(AppointmentList);
-        //}
+        [HttpGet]
+        public async Task<IActionResult> GetDates()
+        {
+            var dates = await dbContext.Schedule.Select(x => x.Date.ToString("yyyy-MM-dd")).ToListAsync();
+            return Json(dates);
+        }
+        [HttpGet]
+        public async Task<IActionResult> FindDates(DateOnly Date)
+        {
+            var dates = await dbContext.Schedule.Where(x => x.Date == Date).Select(x => new
+            {
+                Id = x.Id,
+                Date = x.Date,
+                StartTime = x.StartTime.ToString(@"hh\:mm"),
+                EndTime = x.EndTime.ToString(@"hh\:mm"),
+                Status = x.Status,
+
+            }).FirstOrDefaultAsync();
+            return Json(dates);
+        }
     }
 }

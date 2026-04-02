@@ -197,36 +197,40 @@
 		}, 4000);
 	</script>
 	<script>
-		const schedules = @Html.Raw(Json.Serialize(ViewBag.ScheduleDates));
+		async function loadDates(){
+			const response = await fetch("/Admin/appointment/GetDates");
+			const setDates = await response.json();
 
-		flatpickr("#scheduleDate", {
-			enable: schedules.map(s => s.date),
-			dateFormat: "Y-m-d",
-			minDate: "today",
-			onChange: function (selectedDates, dateStr) {
+			flatpickr("#scheduleDate", {
+				enable: setDates,
+				dateFormat: "Y-m-d",
+				minDate: "today",
+				onChange: async function (selectedDates, dateStr) {
 
-				const selected = schedules.find(s => s.date === dateStr);
-				if (!selected) return;
+					const selected = await fetch(`/Admin/appointment/FindDates?Date=${dateStr}`);
+					const data = await selected.json();
 
-				document.getElementById("scheduleId").value = selected.id;
+					document.getElementById("scheduleId").value = data.id;
 
-				const slotSelect = document.getElementById("slotSelect");
-				slotSelect.innerHTML = '<option value="">-- Select Time Slot --</option>';
-				slotSelect.disabled = true;
+					const slotSelect = document.getElementById("slotSelect");
+					slotSelect.innerHTML = '<option value="">-- Select Time Slot --</option>';
+					slotSelect.disabled = true;
 
-				fetch(`/User/GetSlots?scheduleId=${selected.id}`)
-					.then(res => res.json())
-					.then(data => {
-						data.forEach(slot => {
-							const option = document.createElement("option");
-							option.value = slot.value;
-							option.text = slot.text;
-							slotSelect.appendChild(option);
+					await fetch(`/User/GetSlots?scheduleId=${data.id}`)
+						.then(res => res.json())
+						.then(data => {
+							data.forEach(slot => {
+								const option = document.createElement("option");
+								option.value = slot.value;
+								option.text = slot.text;
+								slotSelect.appendChild(option);
+							});
+							slotSelect.disabled = false;
 						});
-						slotSelect.disabled = false;
-					});
-			}
-		});
+				}
+			});
+		}
+		loadDates();
 	</script>
 	<script>
 		document.getElementById("AppointmentForm").addEventListener("reset",function(){
