@@ -1,22 +1,32 @@
 ﻿@model project_2.ViewModels.DentistViewModel
 
 @{
-    ViewData["Title"] = "InfoPage";
     Layout = null;
 }
-<head>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-</head>
 <style>
     .container{
-        height: calc(100vh - 64px);
+        height: calc(100vh - 128px);
+    }
+
+    .Textcontainer {
+        height: 32px;
     }
     .row{
         margin: 0;
     }
+
+    #Paragraph {
+        font-family: "Raleway", Helvetica, sans-serif;
+        font-size: 1rem;
+        letter-spacing: 0.175em;
+        line-height: 2.5;
+    }
 </style>
-<hr />
 <div class="row position-relative">
+    <div class="d-flex justify-content-center align-items-center Textcontainer mt-5">
+        <p id="Paragraph">All info from this page will be displayed on the user page </p>
+    </div>
     <div class="d-flex justify-content-center align-items-center container">
         <div class="card" style="width: 27rem;">
             <img class="card-img-top" src="~/@Model.DentistImage" alt="Dentist Image">
