@@ -6,6 +6,7 @@
         public String Experience { get; set; }
         public String Collage { get; set; }
         public String PhoneNumber { get; set; }
+        public string Email { get; set; }
         public String DentistImage { get; set; }
     }
 }

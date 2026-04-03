@@ -89,9 +89,27 @@ namespace project_2.Controllers
                     TempData["ErrorMessage"] = "This time slot had already been taken, please select another.";
                     return RedirectToAction(nameof(Index));
                 }
-                repo.Add(collection.ToModel());
-                TempData["SuccessMessage"] = "Your appointment has been booked successfully.";
-                return RedirectToAction(nameof(Index));
+                if (ModelState.IsValid)
+                {
+                    repo.Add(collection.ToModel());
+                    TempData["SuccessMessage"] = "Your appointment has been booked successfully.";
+                    return RedirectToAction(nameof(Index));
+                }
+                collection.SubjectList = new List<SelectListItem>
+                    {
+                        new SelectListItem { Text = "-- Chose --", Value = "-- Chose --" },
+                        new SelectListItem { Text = "Dental Check-up", Value = "Dental Check-up" },
+                        new SelectListItem { Text = "Teeth Cleaning", Value = "Teeth Cleaning" },
+                        new SelectListItem { Text = "Tooth Filling", Value = "Tooth Filling" },
+                        new SelectListItem { Text = "Tooth Extraction", Value = "Tooth Extraction" },
+                        new SelectListItem { Text = "Root Canal Treatment", Value = "Root Canal" },
+                        new SelectListItem { Text = "Dental Pain", Value = "Dental Pain" },
+                        new SelectListItem { Text = "Consultation", Value = "Consultation" },
+                        new SelectListItem { Text = "Cosmetic Dentistry", Value = "Cosmetic" },
+                        new SelectListItem { Text = "Follow-up Appointment", Value = "Follow-up" },
+                        new SelectListItem { Text = "Other", Value = "Other" }
+                    };
+                return View("Index", collection);
             }
             catch
             {

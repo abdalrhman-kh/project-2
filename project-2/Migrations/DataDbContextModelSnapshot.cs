@@ -297,6 +297,10 @@ namespace project_2.Migrations
                     b.Property<DateTime?>("EditDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Experience")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");

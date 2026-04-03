@@ -145,7 +145,7 @@
 										<input class="m-2 text-center form-control rounded" type="text" id="fifth" maxlength="1" />
 										<input class="m-2 text-center form-control rounded" type="text" id="sixth" maxlength="1" />
 									</div>
-									<button type="button" class="primary w-100 mb-1" onclick="SearchAppointments()">Validate</button>
+									<button type="button" class="primary w-100 mb-1" id="validateBtn" onclick="SearchAppointments()">Validate</button>
 									<button type="button" class="secondary w-100" onclick="resetSearch()">Go back</button>
 								</div>
 							</div>
@@ -198,7 +198,7 @@
 	</script>
 	<script>
 		async function loadDates(){
-			const response = await fetch("/Admin/appointment/GetDates");
+			const response = await fetch("/User/GetDates");
 			const setDates = await response.json();
 
 			flatpickr("#scheduleDate", {
@@ -207,7 +207,7 @@
 				minDate: "today",
 				onChange: async function (selectedDates, dateStr) {
 
-					const selected = await fetch(`/Admin/appointment/FindDates?Date=${dateStr}`);
+					const selected = await fetch(`/User/FindDates?Date=${dateStr}`);
 					const data = await selected.json();
 
 					document.getElementById("scheduleId").value = data.id;

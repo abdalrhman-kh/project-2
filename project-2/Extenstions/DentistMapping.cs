@@ -18,6 +18,7 @@ namespace project_2.Extenstions
                 Experience = model.Experience,
                 Collage = model.Collage,
                 PhoneNumber = model.PhoneNumber,
+                Email = model.Email,
                 DentistImage = model.DentistImage,
             };
         }
@@ -30,6 +31,7 @@ namespace project_2.Extenstions
                 Experience = viewmodel.Experience,
                 Collage = viewmodel.Collage,
                 PhoneNumber = viewmodel.PhoneNumber,
+                Email = viewmodel.Email,
                 DentistImage = viewmodel.DentistImage
             };
         }
