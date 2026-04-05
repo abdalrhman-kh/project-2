@@ -34,7 +34,7 @@ namespace project_2.Areas.Admin.Controllers
             var result = await signin.PasswordSignInAsync(model.Email, model.Password, true, false);
             if (result.Succeeded)
             {
-                return RedirectToAction("Index", "Appointment");
+                return RedirectToAction("ViewAppointment", "Appointment");
             }
             return View();
         }
@@ -52,7 +52,7 @@ namespace project_2.Areas.Admin.Controllers
             if (result.Succeeded)
             {
                 await signin.SignInAsync(obj, true);
-                return RedirectToAction("Index", "Appointment");
+                return RedirectToAction("ViewAppointment", "Appointment");
             }
             return View();
         }
