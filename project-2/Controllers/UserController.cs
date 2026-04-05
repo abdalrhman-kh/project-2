@@ -19,17 +19,19 @@ namespace project_2.Controllers
     {
         IRepository<Appointment> repo;
         IRepository<Schedule> repoSchedule;
+        IRepository<OTP> repoOtp;
         DataDbContext dbContext;
         IEmailSender emailSender;
         IOTPHelper otphelper;
 
-        public UserController(IRepository<Appointment> repo, IRepository<Schedule> repoSchedule, IEmailSender emailSender, IOTPHelper otphelper, DataDbContext dbContext)
+        public UserController(IRepository<Appointment> repo, IRepository<Schedule> repoSchedule, IEmailSender emailSender, IOTPHelper otphelper, DataDbContext dbContext, IRepository<OTP> repoOtp)
         {
             this.repo = repo;
             this.repoSchedule = repoSchedule;
             this.emailSender = emailSender;
             this.otphelper = otphelper;
             this.dbContext = dbContext;
+            this.repoOtp = repoOtp;
         }
 
         private List<SelectListItem> GenerateSlots(
@@ -139,9 +141,16 @@ namespace project_2.Controllers
             }
             try
             {
+                var exsistingCode = repoOtp.GetAll().FirstOrDefault(x => x.Email == model.Email && x.expiry > DateTime.Now);
+
+                if(exsistingCode != null)
+                {
+                    return Conflict(new { message = "A valid code has already been sent. Please check your inbox or wait for it to expire." });
+                }
+
                 var OtpCode = await otphelper.GenerateOTP(model.Email);
                 string subject = "Access Code";
-                string body = $"Your verification code is: {OtpCode}";
+                string body = $"Your verification code is: {OtpCode} it will stay vaild for 5 minutes do not share it with anyone";
                 
                 await emailSender.SendEmailAsync(model.Email, subject, body);
                 return Ok(new { message = "A verification code has been sent to your email." });
@@ -173,8 +182,11 @@ namespace project_2.Controllers
                     {
                         var obj = new AppointmentViewModel
                         {
+                            AppointmentId = item.Id,
                             Subject = item.Subject,
                             PatientName = item.PatientName,
+                            Email = item.Email,
+                            PhoneNumber = item.PhoneNumber,
                             StartTime = repoSchedule.Get(item.ScheduleId).Date.ToDateTime(TimeOnly.FromTimeSpan(item.SlotStartTime)),
                             EndTime = repoSchedule.Get(item.ScheduleId).Date.ToDateTime(TimeOnly.FromTimeSpan(item.SlotStartTime).AddMinutes(15)),
                         };
@@ -206,6 +218,40 @@ namespace project_2.Controllers
 
             }).FirstOrDefaultAsync();
             return Json(dates);
+        }
+        [HttpPost]
+        public async Task<IActionResult> EditApt([FromBody] AppointmentViewModel viewModel)
+        {
+            if (ModelState.IsValid)
+            {
+
+                var data = viewModel.ToModel();
+                var oldModel = repo.Get(viewModel.AppointmentId);
+                data.Schedule = repoSchedule.Get(data.ScheduleId);
+                oldModel.Schedule = repoSchedule.Get(oldModel.ScheduleId);
+                string subject = "Appointment changed";
+                string body = $"Hello {data.PatientName} your appointment for: {oldModel.Subject} on {oldModel.Schedule.Date} at {oldModel.SlotStartTime}\n has been changed for: {data.Subject} on {data.Schedule.Date} at {data.SlotStartTime}";
+                repo.Edit(data);
+                await emailSender.SendEmailAsync(data.Email, subject, body);
+                return Ok();
+            }
+            else
+                return BadRequest();
+        }
+        [HttpPost]
+        public async Task<IActionResult> DeleteApt(int id)
+        {
+            if (ModelState.IsValid)
+            {
+                var data = repo.Get(id);
+                data.Schedule = repoSchedule.Get(data.ScheduleId);
+                string subject = "Appointment Removed";
+                string body = $"Hello {data.PatientName} your appointment for: {data.Subject} on {data.Schedule.Date} at {data.SlotStartTime} has been remove please contact the Dental Center for more info";
+                await emailSender.SendEmailAsync(data.Email, subject, body);
+                repo.Delete(id);
+                return Ok();
+            }
+            return BadRequest();
         }
     }
 }

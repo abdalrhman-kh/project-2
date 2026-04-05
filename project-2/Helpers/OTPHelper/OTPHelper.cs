@@ -25,7 +25,7 @@ namespace project_2.Helpers.OTPHelper
             {
                 Email = email,
                 Code = code,
-                expiry = DateTime.Now.AddMinutes(1),
+                expiry = DateTime.Now.AddMinutes(5),
             };
             repo.Add(entry);
             return code;
