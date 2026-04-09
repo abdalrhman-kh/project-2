@@ -2,77 +2,126 @@
 
 @{
 }
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-<style>
-    .container{
-        min-height: calc(100vh - 64px);
-        padding-bottom: 50px;
-    }
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+	<meta name="description" content="" />
+	<meta name="keywords" content="" />
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+	<link rel="stylesheet" href="~/AdminTemplate/assets/css/main.css" />
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+	<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+	<style>
+		#Paragraph {
+			font-family: "Raleway", Helvetica, sans-serif;
+			font-size: 0.8rem;
+			letter-spacing: 0.175em;
+			line-height: 2.5;
+		}
 
-    .Textcontainer {
-        height: 32px;
-    }
-    .row{
-        margin: 0;
-    }
-
-    #Paragraph {
-        font-family: "Raleway", Helvetica, sans-serif;
-        font-size: 1rem;
-        letter-spacing: 0.175em;
-        line-height: 2.5;
-    }
-</style>
-<div class="row position-relative">
-    <div class="d-flex justify-content-center align-items-center Textcontainer mt-5" style="padding-top:5rem;">
-        <p id="Paragraph">All info from this page will be displayed on the user page </p>
-    </div>
-    <div class="d-flex justify-content-center align-items-center container">
-        <div class="card" style="width: 27rem;">
-            <img class="card-img-top" src="~/@Model.DentistImage" alt="Dentist Image">
-            <div class="card-body">
-                <h5 class="card-title">Info Card</h5>
-                <form asp-action="InfoPage" enctype="multipart/form-data">
-                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                    <div class="form-group">
-                        <label asp-for="Name" class="control-label"></label>
-                        <input asp-for="Name" class="form-control" />
-                        <span asp-validation-for="Name" class="text-danger"></span>
-                    </div>
-                    <div class="form-group">
-                        <label asp-for="Experience" class="control-label"></label>
-                        <input asp-for="Experience" class="form-control" />
-                        <span asp-validation-for="Experience" class="text-danger"></span>
-                    </div>
-                    <div class="form-group">
-                        <label asp-for="Collage" class="control-label"></label>
-                        <input asp-for="Collage" class="form-control" />
-                        <span asp-validation-for="Collage" class="text-danger"></span>
-                    </div>
-                    <div class="form-group">
-                        <label asp-for="PhoneNumber" class="control-label"></label>
-                        <input asp-for="PhoneNumber" class="form-control" />
-                        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
-                    </div>
-                    <div class="form-group">
-                        <label asp-for="Email" class="control-label"></label>
-                        <input asp-for="Email" class="form-control" />
-                        <span asp-validation-for="Email" class="text-danger"></span>
-                    </div>
-                    <div class="form-group">
-                        <label asp-for="File" class="control-label"></label>
-                        <input asp-for="File" class="form-control" />
-                        <span asp-validation-for="File" class="text-danger"></span>
-                    </div>
-                    <input asp-for="DentistImage" type="hidden" class="form-control" />
-                    <input type="hidden" asp-for="DentistId" />
-                    <div class="form-group">
-                        <input type="submit" value="Save" class="btn btn-primary mt-2" />
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+		#wrapper:before {
+			background-attachment: fixed;
+			background-color: #ffffff;
+			background-position: -50% 10%;
+			background-repeat: repeat-y;
+			background-size: 75% auto;
+			content: '';
+			display: block;
+			height: 100%;
+			left: 0;
+			position: absolute;
+			top: 0;
+			width: 50vw;
+			z-index: -1;
+		}
+	</style>
+</head>
+<body class="is-preload">
+	<!-- Wrapper -->
+	<div id="wrapper">
+		<!-- Intro -->
+		<section class="intro">
+				<div class="mb-4 d-flex justify-content-center">
+					<div class="card shadow text-left" style="width: auto; max-width:500px; max-height:700px;">
+						<div class="card-body text-center p-5 d-flex flex-column">
+							<img class="card-img-top" src="~/@Model.DentistImage" alt="Card image cap">
+							<div class="card-body">
+								<h5 class="card-title">Info</h5>
+							<p class="card-text text-start" id="Paragraph">
+									<span>Name: @Model.Name</span><br />
+									<span>Experience: @Model.Experience years</span><br />
+									<span>Collage: @Model.Collage</span><br />
+									<span>Email: @Model.Email</span><br />
+									<span>PhoneNumber: @Model.PhoneNumber</span><br />
+								</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			<div class="content container-fluid mt-3" style="padding-top:5rem;">
+				<div class="position-relative">
+					<h2>Profile Page</h2>
+					<p id="Paragraph">
+						Info in this page will be displayed on the user page, fill the form on the right side and example of display is on the left side.
+					</p>
+				</div>
+				<div class="row position-relative mt-4 pt-3">
+					<div class="col-lg-8 col-md-6 mb-4 mx-auto">
+						<div class="card shadow">
+							<div class="card-body m-3">
+								<form asp-action="InfoPage">
+									<div class="row">
+										<div class="col-12 mb-3">
+											<label class="form-label">Name</label>
+											<input asp-for="Name" class="form-control" placeholder="Name" />
+											<span asp-validation-for="Name" class="text-danger"></span>
+										</div>
+										<div class="col-12 mb-3">
+											<label class="form-label">Email</label>
+											<input asp-for="Email" class="form-control" placeholder="Email" />
+											<span asp-validation-for="Email" class="text-danger"></span>
+										</div>
+										<div class="col-6 mb-3">
+											<label class="form-label">Experience</label>
+											<input asp-for="Experience" class="form-control" placeholder="Experience" />
+											<span asp-validation-for="Experience" class="text-danger"></span>
+										</div>
+										<div class="col-6 mb-3">
+											<label class="form-label">Collage</label>
+											<input asp-for="Collage" class="form-control" placeholder="Collage" />
+											<span asp-validation-for="Collage" class="text-danger"></span>
+										</div>
+										<div class="col-6 mb-3">
+											<label class="form-label">Phone Number</label>
+											<input asp-for="PhoneNumber" class="form-control" placeholder="PhoneNumber" />
+											<span asp-validation-for="PhoneNumber" class="text-danger"></span>
+										</div>
+										<div class="col-6 mb-3">
+											<label class="form-label">Image</label>
+											<input asp-for="File" class="form-control" placeholder="File" />
+											<span asp-validation-for="File" class="text-danger"></span>
+										</div>
+										<input type="hidden" asp-for="DentistId"/>
+										<input type="hidden" asp-for="DentistImage"/>
+										<div class="col-12 d-grid gap-2 mt-3">
+											<input type="submit" value="Save" class="primary" />
+										</div>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+	</div>
+	<!-- Scripts -->
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+	<script src="script.js"></script>
+	<script src="~/AdminTemplate/assets/js/jquery.min.js"></script>
+	<script src="~/AdminTemplate/assets/js/jquery.scrolly.min.js"></script>
+	<script src="~/AdminTemplate/assets/js/browser.min.js"></script>
+	<script src="~/AdminTemplate/assets/js/breakpoints.min.js"></script>
+	<script src="~/AdminTemplate/assets/js/util.js"></script>
+	<script src="~/AdminTemplate/assets/js/main.js"></script>
+</body>
