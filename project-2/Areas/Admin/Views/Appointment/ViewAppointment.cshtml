@@ -37,16 +37,22 @@
                     </div>
                     <div class="card-body">
                         <div class="row">
-                            <div class="col-12 col-md-12 col-lg-7 order-2 order-md-1">
+                            <div class="col-9 col-md-12 col-lg-5 order-2 order-md-1">
                                 <div id="inline-calendar">
 
                                 </div>
+                                <div class="mt-2">
+                                    <button class="btn btn-sm btn-primary" onclick="clearDateFilter()">
+                                        Show All Appointments
+                                    </button>
+                                </div>
                             </div>
-                            <div class="col-12 col-md-12 col-lg-4 order-1 order-md-2 ml-5">
+                            <div class="col-12 col-md-12 col-lg-6 order-1 order-md-2 ml-5">
                                 <div>
                                     <table class="table" id="dataTable">
                                         <thead>
                                             <tr>
+                                                <th>Date</th>
                                                 <th>Name</th>
                                                 <th>Email</th>
                                                 <th>Phone</th>
@@ -131,49 +137,35 @@
     <!-- ./wrapper -->
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+    @section Scripts {
+        <script src="https://cdn.datatables.net/2.3.7/js/dataTables.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
-    <!-- AdminLTE App -->
-    <script src="~/ViewAppointmentTemplate/js/adminlte.min.js"></script>
+        <script>
+            $(document).ready(async function () {
+                 async function loadAppointments(dateStr) {
+                    const tableBody = document.getElementById("dataTableBody");
 
-    <script src="https://cdn.datatables.net/2.3.7/js/dataTables.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-    <script>
-        $(document).ready(function(){
-            $('#dataTable').DataTable();
-        });
-    </script>
-
-    <script>
-        async function loadCalendar(){
-            const response = await fetch("/Admin/appointment/GetDates");
-            const setDates = await response.json();
-            const tableCore = document.getElementById("dataTable");
-            const tableBody = document.getElementById("dataTableBody");
-
-            flatpickr("#inline-calendar",{
-                inline: true,
-                dateFormat: "Y-m-d",
-                enable: setDates,
-                onChange: async function (selectedDates, dateStr) {
                     if ($.fn.DataTable.isDataTable('#dataTable')) {
-                            $('#dataTable').DataTable().destroy();
+                        $('#dataTable').DataTable().destroy();
                     }
-                    tableBody.innerHTML="";
-                    const aptResponse = await fetch(`/Admin/Appointment/GetAppointment?Date=${dateStr}`);
-                    aptData = await aptResponse.json();
-                    aptData.forEach(appointment =>{
-                        const actionCell = document.createElement("td");
-                        const editBtn = document.createElement("button");
-                        editBtn.className = "btn btn-sm btn-info";
-                        editBtn.innerHTML = '<i class="fas fa-edit"></i> Edit';
+                    tableBody.innerHTML = "";
 
-                        actionCell.appendChild(editBtn);
+                    const url = dateStr
+                        ? `/Admin/Appointment/GetAppointment?Date=${dateStr}`
+                        : `/Admin/Appointment/GetAppointment`;
 
-                        editBtn.addEventListener("click", () => openEditModal(appointment));
+                    const aptResponse = await fetch(url);
+                    const aptData = await aptResponse.json();
+
+                    aptData.forEach(appointment => {
                         const row = document.createElement("tr");
-                        
+
+                        const DateCell = document.createElement("td");
+                        DateCell.textContent = appointment.date;
+                        row.appendChild(DateCell);
+
                         const nameCell = document.createElement("td");
                         nameCell.textContent = appointment.patientName;
                         row.appendChild(nameCell);
@@ -188,153 +180,180 @@
 
                         const subjectCell = document.createElement("td");
                         subjectCell.textContent = appointment.subject;
-                        console.log("subject:" + appointment.subject)
                         row.appendChild(subjectCell);
 
                         const timeCell = document.createElement("td");
                         timeCell.textContent = appointment.slotStartTime;
                         row.appendChild(timeCell);
 
+                        const actionCell = document.createElement("td");
+                        const editBtn = document.createElement("button");
+                        editBtn.className = "btn btn-sm btn-info";
+                        editBtn.innerHTML = '<i class="fas fa-edit"></i> Edit';
+                        editBtn.addEventListener("click", () => openEditModal(appointment));
+                        actionCell.appendChild(editBtn);
                         row.appendChild(actionCell);
 
                         tableBody.appendChild(row);
-                    })
+                    });
+
                     $('#dataTable').DataTable();
-                },
-            })
-        }
+                }
+                async function loadCalendar(){
+                    const response = await fetch("/Admin/appointment/GetDates");
+                    const setDates = await response.json();
+                    const tableBody = document.getElementById("dataTableBody");
 
-        loadCalendar();
+                    // Load ALL appointments on page load
+                    await loadAppointments(null);
 
-        function openEditModal(data){
-            document.getElementById("editId").value = data.id;
-            document.getElementById("editName").value = data.patientName;
-            document.getElementById("editEmail").value = data.email;
-            document.getElementById("editPhone").value = data.phoneNumber;
-            document.getElementById("editSubject").value = data.subject;
-            document.getElementById("editDate").value = data.date;
-            document.getElementById("editTime").value = data.slotStartTime;
-
-            $('#EditModel').modal('show');
-        }
-        async function ConfirmDelete(){
-            event.preventDefault();
-            const id = document.getElementById("editId").value;
-            Swal.fire({
-            title: "Are you sure?",
-            text: "You won't be able to revert this!",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#3085d6",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Yes, delete it!"
-            }).then( async (result) => {
-                if (result.isConfirmed){
-                    const response = await fetch(`/Admin/appointment/DeleteApt?id=${id}`,{
-                        method:"POST"
+                    flatpickr("#inline-calendar", {
+                        inline: true,
+                        dateFormat: "Y-m-d",
+                        enable: setDates,
+                        onChange: async function (selectedDates, dateStr) {
+                            await loadAppointments(dateStr);
+                        },
                     });
-                    if(response.ok){
-                        await Swal.fire({
-                            title: "Deleted!",
-                            text: "Appointment  has been deleted.",
-                            icon: "success"
-                        });
-                        location.reload();
-                    }
-                    else{
-                        await Swal.fire({
-                            title: "ERROR!",
-                            text: "Something went wrong",
-                            icon: "error"
-                        });
-                        location.reload();
-                    }
+                }
+
+                loadCalendar();
+
+                function openEditModal(data){
+                    document.getElementById("editId").value = data.id;
+                    document.getElementById("editName").value = data.patientName;
+                    document.getElementById("editEmail").value = data.email;
+                    document.getElementById("editPhone").value = data.phoneNumber;
+                    document.getElementById("editSubject").value = data.subject;
+                    document.getElementById("editDate").value = data.date;
+                    document.getElementById("editTime").value = data.slotStartTime;
+
+                    $('#EditModel').modal('show');
                 }
             });
-        }
-        async function ConfirmEdit(){
-            event.preventDefault();
-            const viewmodel = {
-                AppointmentId: document.getElementById("editId").value,
-                PatientName: document.getElementById("editName").value,
-                Email: document.getElementById("editEmail").value,
-                PhoneNumber: document.getElementById("editPhone").value,
-                Subject: document.getElementById("editSubject").value,
-                ScheduleId: document.getElementById("editDate").value,
-                SlotStartTimeString: document.getElementById("editTime").value
-            };
-            Swal.fire({
-            title: "Are you sure?",
-            text: "Do you want to confirm the edit?",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#3085d6",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Yes, Edit it!"
-            }).then( async (result) => {
-                if (result.isConfirmed){
-                    const response = await fetch(`/Admin/appointment/EditApt`,{
-                        method:"POST",
-                        headers: {
-                            "Content-Type": "application/json"
-                         },
-                        body: JSON.stringify(viewmodel)
-                    });
-                    if(response.ok){
-                        Swal.fire({
-                            title: "Edited!",
-                            text: "Appointment  has been Changed.",
-                            icon: "success"
-                        });
-                        location.reload();
-                    }
-                    else{
-                        Swal.fire({
-                            title: "ERROR!",
-                            text: "Something went wrong",
-                            icon: "error"
-                        });
-                    }
-                }
-            });
-        }
-    </script>
-    <script>
-        async function loadDates(){
-            const response = await fetch("/Admin/appointment/GetDates");
-            const setDates = await response.json();
-            flatpickr("#scheduleDate", {
-                enable: setDates,
-                dateFormat: "Y-m-d",
-                minDate: "today",
-                onChange: async function (selectedDates, dateStr) {
-
-                    document.getElementById("scheduleDate").value = dateStr;
-
-                    const res = await fetch(`/Admin/appointment/FindDates?Date=${dateStr}`);
-                    const data = await res.json();
-
-                    document.getElementById("editDate").value = data.id;
-
-                    const slotSelect = document.getElementById("editTime");
-                    slotSelect.innerHTML = '<option value="">-- Select Time Slot --</option>';
-                    slotSelect.disabled = true;
-                    console.log(data.id);
-                    fetch(`/User/GetSlots?scheduleId=${data.id}`)
-                        .then(res => res.json())
-                        .then(data => {
-                            data.forEach(slot => {
-                                const option = document.createElement("option");
-                                option.value = slot.value;
-                                option.text = slot.text;
-                                slotSelect.appendChild(option);
+            async function ConfirmDelete(){
+                    event.preventDefault();
+                    const id = document.getElementById("editId").value;
+                    Swal.fire({
+                    title: "Are you sure?",
+                    text: "You won't be able to revert this!",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Yes, delete it!"
+                    }).then( async (result) => {
+                        if (result.isConfirmed){
+                            const response = await fetch(`/Admin/appointment/DeleteApt?id=${id}`,{
+                                method:"POST"
                             });
-                            slotSelect.disabled = false;
-                        });
+                            if(response.ok){
+                                await Swal.fire({
+                                    title: "Deleted!",
+                                    text: "Appointment  has been deleted.",
+                                    icon: "success"
+                                });
+                                location.reload();
+                            }
+                            else{
+                                await Swal.fire({
+                                    title: "ERROR!",
+                                    text: "Something went wrong",
+                                    icon: "error"
+                                });
+                                location.reload();
+                            }
+                        }
+                    });
                 }
-            });
-        }
-        loadDates();
-    </script>
+            async function ConfirmEdit(){
+                    event.preventDefault();
+                    const viewmodel = {
+                        AppointmentId: document.getElementById("editId").value,
+                        PatientName: document.getElementById("editName").value,
+                        Email: document.getElementById("editEmail").value,
+                        PhoneNumber: document.getElementById("editPhone").value,
+                        Subject: document.getElementById("editSubject").value,
+                        ScheduleId: document.getElementById("editDate").value,
+                        SlotStartTimeString: document.getElementById("editTime").value
+                    };
+                    Swal.fire({
+                    title: "Are you sure?",
+                    text: "Do you want to confirm the edit?",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Yes, Edit it!"
+                    }).then( async (result) => {
+                        if (result.isConfirmed){
+                            const response = await fetch(`/Admin/appointment/EditApt`,{
+                                method:"POST",
+                                headers: {
+                                    "Content-Type": "application/json"
+                                 },
+                                body: JSON.stringify(viewmodel)
+                            });
+                            if(response.ok){
+                                Swal.fire({
+                                    title: "Edited!",
+                                    text: "Appointment  has been Changed.",
+                                    icon: "success"
+                                });
+                                location.reload();
+                            }
+                            else{
+                                Swal.fire({
+                                    title: "ERROR!",
+                                    text: "Something went wrong",
+                                    icon: "error"
+                                });
+                            }
+                        }
+                    });
+                }
+            function clearDateFilter() {
+                document.querySelector("#inline-calendar")._flatpickr.clear();
+                loadAppointments(null);
+            }
+        </script>
+        <script>
+            async function loadDates(){
+                const response = await fetch("/Admin/appointment/GetDates");
+                const setDates = await response.json();
+                flatpickr("#scheduleDate", {
+                    enable: setDates,
+                    dateFormat: "Y-m-d",
+                    minDate: "today",
+                    onChange: async function (selectedDates, dateStr) {
+
+                        document.getElementById("scheduleDate").value = dateStr;
+
+                        const res = await fetch(`/Admin/appointment/FindDates?Date=${dateStr}`);
+                        const data = await res.json();
+
+                        document.getElementById("editDate").value = data.id;
+
+                        const slotSelect = document.getElementById("editTime");
+                        slotSelect.innerHTML = '<option value="">-- Select Time Slot --</option>';
+                        slotSelect.disabled = true;
+                        console.log(data.id);
+                        fetch(`/User/GetSlots?scheduleId=${data.id}`)
+                            .then(res => res.json())
+                            .then(data => {
+                                data.forEach(slot => {
+                                    const option = document.createElement("option");
+                                    option.value = slot.value;
+                                    option.text = slot.text;
+                                    slotSelect.appendChild(option);
+                                });
+                                slotSelect.disabled = false;
+                            });
+                    }
+                });
+            }
+            loadDates();
+        </script>
+    }
 </body>
 </html>
