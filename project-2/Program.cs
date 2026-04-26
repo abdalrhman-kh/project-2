@@ -17,7 +17,7 @@ builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<IImageHelper, ImageHelper>();
 builder.Services.AddScoped<IEmailSender, EmailSender>();
 builder.Services.AddScoped<IOTPHelper, OTPHelper>();
-builder.Services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<DataDbContext>();
+builder.Services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<DataDbContext>().AddDefaultTokenProviders();
 builder.Services.ConfigureApplicationCookie(x=> {
     x.LoginPath = "/Admin/Account/Login";
     x.LogoutPath = "/Home/Index";
