@@ -243,17 +243,19 @@ namespace project_2.Areas.Admin.Controllers
             var data = dbContext.Appointment.Include(x => x.Schedule).Where(x => !x.IsDeleted);
             var today = DateOnly.FromDateTime(DateTime.Today);
             if (Date.HasValue)
-                data = data.Where(x => x.Schedule.Date == Date && x.Schedule.Date >= today);
-               var responce = await data.Select(x=> new 
-                {
-                    Id = x.Id,
-                    PatientName = x.PatientName,
-                    Email = x.Email,
-                    PhoneNumber = x.PhoneNumber,
-                    Subject = x.Subject,
-                    SlotStartTime = x.SlotStartTime.ToString(@"hh\:mm"),
-                    Date = x.Schedule.Date.ToString("yyyy-MM-dd")
-                }).ToListAsync();
+                data = data.Where(x => x.Schedule.Date == Date);
+            else
+                data = data.Where(x => x.Schedule.Date >= today);
+            var responce = await data.Select(x=> new 
+            {
+                Id = x.Id,
+                PatientName = x.PatientName,
+                Email = x.Email,
+                PhoneNumber = x.PhoneNumber,
+                Subject = x.Subject,
+                SlotStartTime = x.SlotStartTime.ToString(@"hh\:mm"),
+                Date = x.Schedule.Date.ToString("yyyy-MM-dd")
+            }).ToListAsync();
                 return Json(responce);
         }
         [HttpGet]
