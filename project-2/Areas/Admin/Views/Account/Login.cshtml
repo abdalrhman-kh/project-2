@@ -338,7 +338,18 @@
         .text-danger{
             color:red;
         }
+
+        .forgot_link{
+            display:block;
+            text-align:left;
+            margin: -4px 0 8px 0;
+            font-size:13px;
+            color: var(--secondary-color);
         }
+        .frogot_link:hover{
+            text-decoration:underline;
+        }
+    }
     </style>
 </head>
 
@@ -352,9 +363,10 @@
                         <input asp-for="Email" placeholder="Email" />
                         <span asp-validation-for="Email" class="text-danger"></span>
                     </div>
-                    <div class="inputs">
+                    <div class="form-control">
                         <input asp-for="Password" placeholder="Password" />
                         <span asp-validation-for="Password" class="text-danger"></span>
+                        <a class="forgot_link" asp-action="ChangePassword" asp-controller="Account" asp-area="Admin">Forgot password?</a>
                     </div>
                 </div>
                 <button type="submit">Sign In</button>

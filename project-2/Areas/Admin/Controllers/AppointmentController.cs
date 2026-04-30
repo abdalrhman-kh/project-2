@@ -10,7 +10,6 @@ using project_2.Helpers.ImageHelpers;
 using project_2.Models;
 using project_2.Models.Repositories;
 using project_2.ViewModels;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace project_2.Areas.Admin.Controllers
 {

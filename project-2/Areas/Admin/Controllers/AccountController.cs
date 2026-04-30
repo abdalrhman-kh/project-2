@@ -116,6 +116,11 @@ namespace project_2.Areas.Admin.Controllers
             }
             return View();
         }
+        public async Task<IActionResult> LogOut()
+        {
+            await signin.SignOutAsync();
+            return RedirectToAction("Login");
+        }
         [HttpPost]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
