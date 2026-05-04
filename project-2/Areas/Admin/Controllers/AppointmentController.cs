@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using project_2.Areas.Admin.ViewModels;
 using project_2.Data;
 using project_2.Extenstions;
 using project_2.Helpers.Email;
@@ -179,6 +180,27 @@ namespace project_2.Areas.Admin.Controllers
             Schedule data = ViewModel.ToModel();
             schedulerepo.Edit(data);
             return RedirectToAction("EditSchedule");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddApt([FromBody] AddAppointmentViewModel viewModel)
+        {
+            if (ModelState.IsValid)
+            {
+                var appointment = new Appointment
+                {
+                    PatientName = viewModel.PatientName,
+                    Email = "N/A",
+                    PhoneNumber = "N/A",
+                    Subject = viewModel.Subject,
+                    ScheduleId = viewModel.ScheduleId,
+                    SlotStartTime = TimeSpan.Parse(viewModel.SlotStartTimeString),
+                };
+                repo.Add(appointment);
+                return Ok();
+            }
+            else
+                return BadRequest();
         }
 
         [HttpPost]
