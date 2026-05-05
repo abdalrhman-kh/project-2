@@ -424,7 +424,7 @@
             document.getElementById('OTPModel').style.display = 'block';
 
             if (!email) {
-                Swal.fire("Error", "Please enter both email and phone number");
+                Swal.fire("Error", "Please enter email");
                 return;
             }
             const data = await fetch('/Admin/Account/VerifyEmail',{
@@ -483,7 +483,10 @@
 				fullcode +=input.value;
 			});
 			if (fullcode.length < 6) {
-				alert("Please enter the full 6-digit code.");
+                await Swal.fire({
+                    title: "ERROR!",
+                    text: "Please enter the full 6 diget code.",
+                });
 				return;
 			}
 			const data = await fetch('/Admin/Account/VerifyOTP',{
@@ -498,6 +501,12 @@
 				const response = await data.json();
                 window.location.href = `/Admin/Account/ChangePassword?Email=${encodeURIComponent(response.email)}`;
 			}
+            else{
+                await Swal.fire({
+                    title: "ERROR!",
+                    text: "Wrong code please try again.",
+                });
+            }
 		}
     </script>
     <script>

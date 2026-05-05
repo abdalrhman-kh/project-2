@@ -399,7 +399,10 @@
 				fullcode +=input.value;
 			});
 			if (fullcode.length < 6) {
-				alert("Please enter the full 6-digit code.");
+				await Swal.fire({
+					title: "ERROR!",
+					text: "Please enter the full 6 diget code.",
+				});
 				return;
 			}
 			const data = await fetch('/User/VerifyOTP',{
@@ -420,6 +423,12 @@
 				else{
 					document.getElementById("noResults").style.display = "block";
 				}
+			}
+			else{
+				await Swal.fire({
+					title: "ERROR!",
+					text: "Wrong code please try again.",
+				});
 			}
 		}
 
