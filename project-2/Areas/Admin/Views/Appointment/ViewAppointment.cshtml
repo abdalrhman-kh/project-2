@@ -49,6 +49,16 @@
                                         Show All Appointments
                                     </button>
                                 </div>
+                                <div class="card p-3 mt-2">
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span id="statsLabel">Active Appointments</span>
+                                        <span id="statsCount"></span>
+                                    </div>
+                                    <div style="background:#e9ecef; border-radius:4px; height:8px; width:100%;">
+                                        <div id="progressBar" style="height:8px; border-radius:4px; transition: width 0.6s ease;"></div>
+                                    </div>
+                                    <small id="statsMonth" class="text-muted mt-1"></small>
+                                </div>
                             </div>
                             <div class="col-12 col-md-12 col-lg-6 order-1 order-md-2 ml-5">
                                 <div>
@@ -495,6 +505,26 @@
                 });
             }
             loadDates();
+        </script>
+        <script>
+            async function loadStats(){
+                console.log("In loadStats");
+                const res = await fetch("/Admin/Appointment/GetStats");
+                const data = await res.json();
+
+                const bar = document.getElementById("progressBar");
+                const color = "#1E90FF";
+
+                document.getElementById("statsCount").textContent = `${data.active} / ${data.total}`;
+                document.getElementById("statsMonth").textContent = `${data.month} — ${data.percent}% active`;
+
+                setTimeout(() => {
+                    bar.style.background= color;
+                    bar.style.width = `${data.percent}%`;
+                    document.getElementById("progressBar").style.width = `${data.percentage}%`;
+                }, 100);
+            }
+            loadStats();
         </script>
     }
 </body>

@@ -162,6 +162,7 @@ namespace project_2.Controllers
         [HttpPost]
         public async Task<IActionResult> VerifyOTP([FromBody] OTPVerifyViewModel model)
         {
+            var today = DateOnly.FromDateTime(DateTime.Today);
             if (String.IsNullOrEmpty(model.Code)) { 
                 return BadRequest("Invalid code");
             }
@@ -174,7 +175,7 @@ namespace project_2.Controllers
                 {
                     if (String.IsNullOrEmpty(model.Email))
                         return BadRequest("Email and phone number are required");
-                    var Appointments = repo.GetAll().Where(x => x.Email == model.Email).ToList();
+                    var Appointments = dbContext.Appointment.Include(x=>x.Schedule).Where(x=>!x.IsDeleted && x.Email ==  model.Email && x.Schedule.Date >= today).ToList();
                     if (Appointments.Count == 0)
                         return BadRequest("No appointments found");
                     List<AppointmentViewModel> AppointmentList = new List<AppointmentViewModel>();

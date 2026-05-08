@@ -58,11 +58,6 @@ namespace project_2.Areas.Admin.Controllers
         }
 
         // GET: AppointmentController
-        public ActionResult Index()
-        {
-            var data = dbContext.Appointment.Include(x=>x.Schedule).Where(x=>!x.IsDeleted).ToList();
-            return View(data.ToViewModelList());
-        }
         public IActionResult ViewAppointment()
         {
 
@@ -291,6 +286,28 @@ namespace project_2.Areas.Admin.Controllers
             var slots = GenerateSlots(schedule.StartTime, schedule.EndTime).Where(x => !booked.Contains(TimeSpan.Parse(x.Value))).ToList();
 
             return Json(slots);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetStats()
+        {
+            var today = DateTime.Today;
+            var firstDay = new DateOnly(today.Year, today.Month, 1);
+            var lastDay = new DateOnly(today.Year, today.Month, DateTime.DaysInMonth(today.Year, today.Month));
+
+            var total = await dbContext.Appointment.Include(x => x.Schedule).Where(x => x.Schedule.Date >= firstDay && x.Schedule.Date <= lastDay).CountAsync();
+
+            var active = await dbContext.Appointment.Include(x => x.Schedule).Where(x => !x.IsDeleted && x.Schedule.Date >= firstDay && x.Schedule.Date <= lastDay).CountAsync();
+
+            var percent = (int)((double) active / total * 100);
+
+            return Json(new
+            {
+                Total = total,
+                Active = active,
+                Percent = percent,
+                Month = today.ToString("MMMM")
+            });
         }
     }
 }
