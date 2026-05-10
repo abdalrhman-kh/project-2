@@ -18,13 +18,14 @@ namespace project_2.Controllers
     public class UserController : Controller
     {
         IRepository<Appointment> repo;
+        IRepository<Dentist> repoDentist;
         IRepository<Schedule> repoSchedule;
         IRepository<OTP> repoOtp;
         DataDbContext dbContext;
         IEmailSender emailSender;
         IOTPHelper otphelper;
 
-        public UserController(IRepository<Appointment> repo, IRepository<Schedule> repoSchedule, IEmailSender emailSender, IOTPHelper otphelper, DataDbContext dbContext, IRepository<OTP> repoOtp)
+        public UserController(IRepository<Appointment> repo, IRepository<Schedule> repoSchedule, IEmailSender emailSender, IOTPHelper otphelper, DataDbContext dbContext, IRepository<OTP> repoOtp, IRepository<Dentist> repoDentist)
         {
             this.repo = repo;
             this.repoSchedule = repoSchedule;
@@ -32,6 +33,7 @@ namespace project_2.Controllers
             this.otphelper = otphelper;
             this.dbContext = dbContext;
             this.repoOtp = repoOtp;
+            this.repoDentist = repoDentist;
         }
 
         private List<SelectListItem> GenerateSlots(
@@ -78,7 +80,16 @@ namespace project_2.Controllers
                 },
                 AvailableSlots = new List<SelectListItem>(),
             };
-            return View(data);
+
+            var dentistData = repoDentist.GetAll().FirstOrDefault().ToViewModel();
+
+            var pageData = new UserViewModels
+            {
+                AppointmentView = data,
+                DentistView = dentistData,
+            };
+
+            return View(pageData);
         }
         [HttpPost]
         [ValidateAntiForgeryToken]

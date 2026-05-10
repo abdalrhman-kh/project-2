@@ -1,4 +1,4 @@
-﻿@model project_2.ViewModels.AppointmentViewModel
+﻿@model project_2.ViewModels.UserViewModels
 @{
 }
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
@@ -70,19 +70,19 @@
 						<form method="post" asp-action="Create" id="AppointmentForm">
 							<div class="row gtr-uniform">
 								<div class="col-12 mb-3">
-									<input asp-for="PatientName" class="form-control" placeholder="Patient Name" />
-									<span asp-validation-for="PatientName" class="text-danger"></span>
+									<input asp-for="AppointmentView.PatientName" class="form-control" placeholder="Patient Name" />
+								<span asp-validation-for="AppointmentView.PatientName" class="text-danger"></span>
 								</div>
 								<div class="col-12 mb-3">
-									<input asp-for="Email" class="form-control" placeholder="Email" />
-									<span asp-validation-for="Email" class="text-danger"></span>
+								<input asp-for="AppointmentView.Email" class="form-control" placeholder="Email" />
+								<span asp-validation-for="AppointmentView.Email" class="text-danger"></span>
 								</div>
 								<div class="col-12 mb-3">
-									<input asp-for="PhoneNumber" class="form-control" placeholder="Phone Number" />
-									<span asp-validation-for="PhoneNumber" class="text-danger"></span>
+								<input asp-for="AppointmentView.PhoneNumber" class="form-control" placeholder="Phone Number" />
+								<span asp-validation-for="AppointmentView.PhoneNumber" class="text-danger"></span>
 								</div>
 								<div class="col-6">
-									<select asp-for="Subject" class="form-control" asp-items="Model.SubjectList"></select>
+								<select asp-for="AppointmentView.Subject" class="form-control" asp-items="Model.AppointmentView.SubjectList"></select>
 								</div>
 								<div class="col-6">
 									<input type="text"
@@ -90,11 +90,11 @@
 										   class="form-control"
 										   placeholder="Select available date"
 										   readonly />
-									<input type="hidden" asp-for="ScheduleId" id="scheduleId" />
+								<input type="hidden" asp-for="AppointmentView.ScheduleId" id="scheduleId" />
 								</div>
 								<div class="col-6">
-									<select asp-for="SlotStartTimeString"
-											asp-items="Model.AvailableSlots"
+								<select asp-for="AppointmentView.SlotStartTimeString"
+										asp-items="Model.AppointmentView.AvailableSlots"
 											class="form-control"
 											id="slotSelect"
 											disabled>
@@ -114,16 +114,18 @@
 			</div>
 		</div>
 		<div class="mb-4 Doctor-Card">
-			<div class="card shadow" style="max-width: 350px; max-height:auto;">
+			<div class="card shadow" style="max-width: 450px; max-height:auto;">
 				<div class="card-body text-center p-5 d-flex flex-column">
-					<img class="card-img-top" src="..." alt="Card image cap">
+					<img class="card-img-top" src="~/@Model.DentistView.DentistImage" alt="Dentist Image">
 					<div class="card-body">
-						<h5 class="card-title">Card title</h5>
+						<h5 class="card-title">Info Card</h5>
 						<p class="card-text">
-							Some quick example text to build on the card title and make up the bulk of the card's content.
-							Some quick example text to build on the card title and make up the bulk of the card's content.
+							Name: @Model.DentistView.Name <br />
+							Experience: @Model.DentistView.Experience <br />
+							Collage: @Model.DentistView.Collage <br />
+							Phone Number: @Model.DentistView.PhoneNumber <br />
+							Email: @Model.DentistView.Email <br />
 						</p>
-						<a href="#" class="btn btn-primary">Go somewhere</a>
 					</div>
 				</div>
 			</div>
@@ -209,22 +211,22 @@
 				</div>
 				<div class="modal-body">
 					<form method="post" asp-action="EditApt" id="AppointmentForm">
-						<input asp-for="AppointmentId" type="hidden" id="editId" />
+						<input asp-for="AppointmentView.AppointmentId" type="hidden" id="editId" />
 						<div class="row gtr-uniform">
 							<div class="col-12 mb-3">
-								<input asp-for="PatientName" id="editName" class="form-control" placeholder="Patient Name"/>
-								<span asp-validation-for="PatientName" class="text-danger"></span>
+								<input asp-for="AppointmentView.PatientName" id="editName" class="form-control" placeholder="Patient Name" />
+								<span asp-validation-for="AppointmentView.PatientName" class="text-danger"></span>
 							</div>
 							<div class="col-12 mb-3">
-								<input asp-for="Email" id="editEmail" class="form-control" placeholder="Email"/>
-								<span asp-validation-for="Email" class="text-danger"></span>
+								<input asp-for="AppointmentView.Email" id="editEmail" class="form-control" placeholder="Email" />
+								<span asp-validation-for="AppointmentView.Email" class="text-danger"></span>
 							</div>
 							<div class="col-12 mb-3">
-								<input asp-for="PhoneNumber" id="editPhone" class="form-control" placeholder="Phone Number"/>
-								<span asp-validation-for="PhoneNumber" class="text-danger"></span>
+								<input asp-for="AppointmentView.PhoneNumber" id="editPhone" class="form-control" placeholder="Phone Number" />
+								<span asp-validation-for="AppointmentView.PhoneNumber" class="text-danger"></span>
 							</div>
 							<div class="col-6 mb-3">
-								<select asp-for="Subject" id="editSubject" class="form-control" asp-items="Model.SubjectList"></select>
+								<select asp-for="AppointmentView.Subject" id="editSubject" class="form-control" asp-items="Model.AppointmentView.SubjectList"></select>
 							</div>
 							<div class="col-6 mb-3">
 								<input type="text"
@@ -232,11 +234,11 @@
 									   class="form-control"
 									   placeholder="Select available date"
 									   readonly />
-								<input type="hidden" asp-for="ScheduleId" id="editDate" />
+								<input type="hidden" asp-for="AppointmentView.ScheduleId" id="editDate" />
 							</div>
 							<div class="col-6 mb-3">
-								<select asp-for="SlotStartTimeString"
-										asp-items="Model.AvailableSlots"
+								<select asp-for="AppointmentView.SlotStartTimeString"
+										asp-items="Model.AppointmentView.AvailableSlots"
 										class="form-control"
 										id="editTime"
 										disabled>
