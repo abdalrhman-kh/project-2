@@ -4,6 +4,6 @@
     {
         public AppointmentViewModel AppointmentView { get; set; }
 
-        public DentistViewModel DentistView { get; set; }
+        public DentistViewModel? DentistView { get; set; }
     }
 }

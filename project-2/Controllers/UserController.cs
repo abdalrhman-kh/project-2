@@ -39,7 +39,7 @@ namespace project_2.Controllers
         private List<SelectListItem> GenerateSlots(
         TimeSpan start,
         TimeSpan end,
-        int slotMinutes = 60)
+        int slotMinutes = 40)
         {
             var slots = new List<SelectListItem>();
             var current = start;
@@ -93,22 +93,22 @@ namespace project_2.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(AppointmentViewModel collection)
+        public IActionResult Create(UserViewModels collection)
         {
             try
             {
-                var isTaken = repo.GetAll().Any(x=>x.ScheduleId == collection.ScheduleId && x.SlotStartTime.ToString() == collection.SlotStartTimeString + ":00");
+                var isTaken = repo.GetAll().Any(x=>x.ScheduleId == collection.AppointmentView.ScheduleId && x.SlotStartTime.ToString() == collection.AppointmentView.SlotStartTimeString + ":00");
                 if (isTaken) {
                     TempData["ErrorMessage"] = "This time slot had already been taken, please select another.";
                     return RedirectToAction(nameof(Index));
                 }
                 if (ModelState.IsValid)
                 {
-                    repo.Add(collection.ToModel());
+                    repo.Add(collection.AppointmentView.ToModel());
                     TempData["SuccessMessage"] = "Your appointment has been booked successfully.";
                     return RedirectToAction(nameof(Index));
                 }
-                collection.SubjectList = new List<SelectListItem>
+                collection.AppointmentView.SubjectList = new List<SelectListItem>
                     {
                         new SelectListItem { Text = "-- Chose --", Value = "-- Chose --" },
                         new SelectListItem { Text = "Dental Check-up", Value = "Dental Check-up" },
@@ -122,6 +122,7 @@ namespace project_2.Controllers
                         new SelectListItem { Text = "Follow-up Appointment", Value = "Follow-up" },
                         new SelectListItem { Text = "Other", Value = "Other" }
                     };
+
                 return View("Index", collection);
             }
             catch
@@ -217,6 +218,23 @@ namespace project_2.Controllers
             var dates = await dbContext.Schedule.Select(x => x.Date.ToString("yyyy-MM-dd")).ToListAsync();
             return Json(dates);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetNextAvailableDates()
+        {
+            var today = DateOnly.FromDateTime(DateTime.Today);
+
+            var dates = await dbContext.Schedule.Where(x => x.Date == today && x.Status).OrderBy(x => x.Date).Take(3).Select(x=> new
+            {
+                Id = x.Id,
+                Date = x.Date.ToString("yyyy-MM-dd"),
+                StartTime = x.StartTime.ToString(@"hh\:mm"),
+                EndTime = x.EndTime.ToString(@"hh\:mm"),
+            }).ToListAsync();
+
+            return Json(dates);
+        }
+
         [HttpGet]
         public async Task<IActionResult> FindDates(DateOnly Date)
         {
@@ -232,13 +250,13 @@ namespace project_2.Controllers
             return Json(dates);
         }
         [HttpPost]
-        public async Task<IActionResult> EditApt([FromBody] AppointmentViewModel viewModel)
+        public async Task<IActionResult> EditApt([FromBody] UserViewModels viewModel)
         {
             if (ModelState.IsValid)
             {
 
-                var data = viewModel.ToModel();
-                var oldModel = repo.Get(viewModel.AppointmentId);
+                var data = viewModel.AppointmentView.ToModel();
+                var oldModel = repo.Get(viewModel.AppointmentView.AppointmentId);
                 data.Schedule = repoSchedule.Get(data.ScheduleId);
                 oldModel.Schedule = repoSchedule.Get(oldModel.ScheduleId);
                 string subject = "Appointment changed";

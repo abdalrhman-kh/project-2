@@ -130,6 +130,31 @@
 				</div>
 			</div>
 		</div>
+
+	<div class="mb-4 Abt-Card">
+		<div class="card shadow" style="max-width: 450px; max-height:auto;">
+			<div class="card-body text-center p-5 d-flex flex-column">
+				<h5 class="card-title">Available Times</h5>
+				<div class="d-flex justify-content-evenly">
+					<div class="d-flex flex-column align-items-center gap-2">
+						<strong id="today">Today </strong>
+						<div id="slots-today" class="d-flex flex-column gap-1"></div>
+					</div>
+					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+					<div class="d-flex flex-column align-items-center gap-2">
+						<strong id="tomorrow"></strong>
+						<div id="slots-tomorrow" class="d-flex flex-column gap-1"></div>
+					</div>
+					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+					<div class="d-flex flex-column align-items-center gap-2">
+						<strong id="theDayAfter"></strong>
+						<div id="slots-theDayAfter" class="d-flex flex-column gap-1"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
 	@if (TempData["SuccessMessage"] != null)
 	{
 		<div class="alert alert-success alert-fixed">
@@ -337,6 +362,71 @@
 			});
 		}
 		loadDates();
+
+		async function loadTimes(){
+
+			const response = await fetch("/User/GetNextAvailableDates");
+			const dates = await response.json();
+			console.log("dates:", dates);
+			const ids = ["today", "tomorrow", "theDayAfter"];
+
+			for(let index = 0; index < ids.length; index++){
+				const id = ids[index];
+				const el = document.getElementById(id);
+				const slotDiv = document.getElementById(`slots-${id}`);
+				if(!el) continue;
+
+				if(dates[index]){
+					const parts = dates[index].date.split('-');
+					const date = new Date(parts[0], parts[1] - 1, parts[2]);
+					el.innerText = `${String(date.getDate()).padStart(2,'0')}/${String(date.getMonth()+1).padStart(2,'0')}`;
+
+					const slotRes = await fetch(`/User/GetSlots?scheduleId=${dates[index].id}`);
+					const slots = await slotRes.json();
+					console.log("slots for", dates[index].date, ":", slots);
+
+					slotDiv.innerHTML = "";
+
+					if(slots.length == 0)
+					slotDiv.innerHTML = `<small class="text-muted">No slots</small>`;
+
+					else{
+						console.log("create button");
+						slots.forEach(slot => {
+							const btn = document.createElement("button");
+							btn.className = "secondary";
+							btn.style.fontSize = "10px";
+							btn.textContent = slot.text;
+
+							btn.onclick = async () => {
+								document.getElementById("scheduleId").value = dates[index].id;
+								document.getElementById("scheduleDate")._flatpickr.setDate(dates[index].date);
+
+								const slotSelect = document.getElementById("slotSelect");
+								slotSelect.innerHTML = '<option value="">-- Select Time Slot --</option>';
+
+								const res = await fetch(`/User/GetSlots?scheduleId=${dates[index].id}`);
+								const slotOptions = await res.json();
+
+								slotOptions.forEach(s => {
+									const option = document.createElement("option");
+									option.value = s.value;
+									option.text = s.text;
+									slotSelect.appendChild(option);
+								});
+								document.getElementById("slotSelect").disabled = false;
+								document.getElementById("slotSelect").value = slot.value;
+							};
+						slotDiv.appendChild(btn);
+						});
+					}
+				}
+				else{
+					slotDiv.innerHTML = `<small class="text-muted">N/A</small>`;
+				}
+			}
+		}
+		loadTimes();
 	</script>
 	<script>
 		document.getElementById("AppointmentForm").addEventListener("reset",function(){

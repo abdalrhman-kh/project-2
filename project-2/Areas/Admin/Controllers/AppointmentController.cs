@@ -37,7 +37,7 @@ namespace project_2.Areas.Admin.Controllers
         private List<SelectListItem> GenerateSlots(
         TimeSpan start,
         TimeSpan end,
-        int slotMinutes = 60)
+        int slotMinutes = 40)
         {
             var slots = new List<SelectListItem>();
             var current = start;
