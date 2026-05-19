@@ -291,9 +291,14 @@ namespace project_2.Areas.Admin.Controllers
         [HttpGet]
         public async Task<IActionResult> GetStats()
         {
-            var today = DateTime.Today;
-            var firstDay = new DateOnly(today.Year, today.Month, 1);
-            var lastDay = new DateOnly(today.Year, today.Month, DateTime.DaysInMonth(today.Year, today.Month));
+            var date = DateTime.Today;
+            var today = DateOnly.FromDateTime(DateTime.Now);
+            var firstDay = new DateOnly(date.Year, date.Month, 1);
+            var lastDay = new DateOnly(date.Year, date.Month, DateTime.DaysInMonth(date.Year, date.Month));
+
+            var totalToday = await dbContext.Appointment.Include(x => x.Schedule).Where(x => !x.IsDeleted && x.Schedule.Date == today && x.Schedule.Date <= lastDay).CountAsync();
+
+            var totalTodaycanceld = await dbContext.Appointment.Include(x => x.Schedule).Where(x => x.IsDeleted && x.Schedule.Date == today && x.Schedule.Date <= lastDay).CountAsync();
 
             var total = await dbContext.Appointment.Include(x => x.Schedule).Where(x => x.Schedule.Date >= firstDay && x.Schedule.Date <= lastDay).CountAsync();
 
@@ -304,6 +309,8 @@ namespace project_2.Areas.Admin.Controllers
             return Json(new
             {
                 Total = total,
+                TotalToday = totalToday,
+                TotalTodaycanceld = totalTodaycanceld,
                 Active = active,
                 Percent = percent,
                 Month = today.ToString("MMMM")

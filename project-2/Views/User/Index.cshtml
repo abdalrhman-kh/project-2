@@ -44,21 +44,26 @@
 	.swal2-container {
 		z-index: 10000 !important;
 	}
+
+	#Paragraph {
+		font-family: "Raleway", Helvetica, sans-serif;
+		font-size: 0.8rem;
+		letter-spacing: 0.175em;
+		line-height: 2.5;
+	}
 </style>
 <header>
 	<nav class="navbar bg-body-tertiary fixed-top shadow">
-		<div class="container justify-content-center">
 			<div class="navbar-brand mb-0">
 				<img src="~/Images/Dental-Logo-Design.jpg"
 					 alt="Dentist Logo"
 					 class="navbar-logo" />
 			</div>
 			<div class="navbar-brand mb-0">
-				<button type="button" class="" data-bs-toggle="modal" data-bs-target="#ViewAppointmentpopup">
+				<button type="button" style="box-shadow:none; text-decoration:underline;" data-bs-toggle="modal" data-bs-target="#ViewAppointmentpopup">
 					View my appointment
 				</button>
 			</div>
-		</div>
 	</nav>
 </header>
 <body>
@@ -119,12 +124,12 @@
 					<img class="card-img-top" src="~/@Model.DentistView.DentistImage" alt="Dentist Image">
 					<div class="card-body">
 						<h5 class="card-title">Info Card</h5>
-						<p class="card-text">
-							Name: @Model.DentistView.Name <br />
-							Experience: @Model.DentistView.Experience <br />
-							Collage: @Model.DentistView.Collage <br />
-							Phone Number: @Model.DentistView.PhoneNumber <br />
-							Email: @Model.DentistView.Email <br />
+						<p class="card-text text-start" id="Paragraph">
+						<span>Name: @Model.DentistView.Name</span><br />
+						<span>Experience: @Model.DentistView.Experience years</span><br />
+						<span>Collage: @Model.DentistView.Collage</span><br />
+						<span>Email: @Model.DentistView.Email</span><br />
+						<span>PhoneNumber: @Model.DentistView.PhoneNumber</span><br />
 						</p>
 					</div>
 				</div>
@@ -134,7 +139,12 @@
 	<div class="mb-4 Abt-Card">
 		<div class="card shadow" style="max-width: 450px; max-height:auto;">
 			<div class="card-body text-center p-5 d-flex flex-column">
-				<h5 class="card-title">Available Times</h5>
+				<h5 class="card-title">Available Times <span class="tip" data-bs-placment="top" title="this only shows the first 5 time slots">
+						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-question-circle" viewBox="0 0 16 16">
+							<path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" />
+							<path d="M5.255 5.786a.237.237 0 0 0 .241.247h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286m1.557 5.763c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94" />
+						</svg>
+				</span></h5>
 				<div class="d-flex justify-content-evenly">
 					<div class="d-flex flex-column align-items-center gap-2">
 						<strong id="today">Today </strong>
@@ -367,7 +377,6 @@
 
 			const response = await fetch("/User/GetNextAvailableDates");
 			const dates = await response.json();
-			console.log("dates:", dates);
 			const ids = ["today", "tomorrow", "theDayAfter"];
 
 			for(let index = 0; index < ids.length; index++){
@@ -383,7 +392,6 @@
 
 					const slotRes = await fetch(`/User/GetSlots?scheduleId=${dates[index].id}`);
 					const slots = await slotRes.json();
-					console.log("slots for", dates[index].date, ":", slots);
 
 					slotDiv.innerHTML = "";
 
@@ -391,8 +399,7 @@
 					slotDiv.innerHTML = `<small class="text-muted">No slots</small>`;
 
 					else{
-						console.log("create button");
-						slots.forEach(slot => {
+						slots.slice(0,5).forEach(slot => {
 							const btn = document.createElement("button");
 							btn.className = "secondary";
 							btn.style.fontSize = "10px";
@@ -405,10 +412,7 @@
 								const slotSelect = document.getElementById("slotSelect");
 								slotSelect.innerHTML = '<option value="">-- Select Time Slot --</option>';
 
-								const res = await fetch(`/User/GetSlots?scheduleId=${dates[index].id}`);
-								const slotOptions = await res.json();
-
-								slotOptions.forEach(s => {
+								slots.forEach(s => {
 									const option = document.createElement("option");
 									option.value = s.value;
 									option.text = s.text;
@@ -689,5 +693,11 @@
 				document.querySelectorAll('#otp-input > input').forEach(input => otp += input.value);
 			});
 		});
+	</script>
+	<script>
+		const tooltips = document.querySelectorAll(".tip")
+		tooltips.forEach(t=>{
+			new bootstrap.Tooltip(t)
+		})
 	</script>
 </body>

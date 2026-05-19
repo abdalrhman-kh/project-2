@@ -224,7 +224,7 @@ namespace project_2.Controllers
         {
             var today = DateOnly.FromDateTime(DateTime.Today);
 
-            var dates = await dbContext.Schedule.Where(x => x.Date == today && x.Status).OrderBy(x => x.Date).Take(3).Select(x=> new
+            var dates = await dbContext.Schedule.Where(x => x.Date >= today && x.Status).OrderBy(x => x.Date).Take(3).Select(x=> new
             {
                 Id = x.Id,
                 Date = x.Date.ToString("yyyy-MM-dd"),

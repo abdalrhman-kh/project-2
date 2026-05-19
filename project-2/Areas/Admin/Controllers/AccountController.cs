@@ -119,7 +119,7 @@ namespace project_2.Areas.Admin.Controllers
         public async Task<IActionResult> LogOut()
         {
             await signin.SignOutAsync();
-            return RedirectToAction("Login");
+            return RedirectToAction("index","user", new {area = ""});
         }
         [HttpPost]
         public async Task<IActionResult> Register(RegisterViewModel model)
