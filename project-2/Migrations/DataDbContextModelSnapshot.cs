@@ -258,9 +258,6 @@ namespace project_2.Migrations
                     b.Property<TimeSpan>("SlotStartTime")
                         .HasColumnType("time");
 
-                    b.Property<bool>("Status")
-                        .HasColumnType("bit");
-
                     b.Property<string>("Subject")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");

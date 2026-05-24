@@ -18,7 +18,6 @@ namespace project_2.Extenstions
                 SlotStartTime = model.SlotStartTime,
                 StartTime = model.Schedule.Date.ToDateTime(TimeOnly.FromTimeSpan(model.SlotStartTime)),
                 EndTime = model.Schedule.Date.ToDateTime(TimeOnly.FromTimeSpan(model.SlotStartTime)).AddHours(1),
-                Status = model.Status
             };
         }
         public static Appointment ToModel(this AppointmentViewModel viewmodel)
@@ -32,7 +31,6 @@ namespace project_2.Extenstions
                 PhoneNumber = viewmodel.PhoneNumber,
                 Email = viewmodel.Email,
                 SlotStartTime = TimeSpan.Parse(viewmodel.SlotStartTimeString),
-                Status = viewmodel.Status
             };
         }
         public static List<AppointmentViewModel> ToViewModelList(this List<Appointment> models)

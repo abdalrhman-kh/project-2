@@ -56,8 +56,6 @@ namespace project_2.Areas.Admin.Controllers
 
             return slots;
         }
-
-        // GET: AppointmentController
         public IActionResult ViewAppointment()
         {
 
@@ -100,7 +98,6 @@ namespace project_2.Areas.Admin.Controllers
             data.Status = true;
             return View(data);
         }
-
         public IActionResult EditSchedule()
         {
             ScheduleViewModel data = new ScheduleViewModel
@@ -114,7 +111,6 @@ namespace project_2.Areas.Admin.Controllers
             data.Status = true;
             return View(data);
         }
-        
         public IActionResult InfoPage()
         {
             var data = dentistrepo.GetAll().FirstOrDefault();
@@ -144,7 +140,6 @@ namespace project_2.Areas.Admin.Controllers
             }
             return View("InfoPage", viewmodel);
         }
-
         [HttpPost]
         public IActionResult Create(ScheduleViewModel ViewModel)
         {
@@ -176,7 +171,6 @@ namespace project_2.Areas.Admin.Controllers
             schedulerepo.Edit(data);
             return RedirectToAction("EditSchedule");
         }
-
         [HttpPost]
         public async Task<IActionResult> AddApt([FromBody] AddAppointmentViewModel viewModel)
         {
@@ -197,7 +191,6 @@ namespace project_2.Areas.Admin.Controllers
             else
                 return BadRequest();
         }
-
         [HttpPost]
         public async Task<IActionResult> EditApt([FromBody] AppointmentViewModel viewModel)
         {
@@ -232,7 +225,6 @@ namespace project_2.Areas.Admin.Controllers
             }
             return BadRequest();
         } 
-
         [HttpGet]
         public async Task<IActionResult> GetDates()
         {
@@ -273,6 +265,24 @@ namespace project_2.Areas.Admin.Controllers
                 Date = x.Schedule.Date.ToString("yyyy-MM-dd")
             }).ToListAsync();
                 return Json(responce);
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetCanceled()
+        {
+            var today = DateOnly.FromDateTime(DateTime.Today);
+            var data = dbContext.Appointment.Include(x => x.Schedule).Where(x => x.IsDeleted && x.Schedule.Date >= today);
+            var responce = await data.Select(x => new
+            {
+                Id = x.Id,
+                PatientName = x.PatientName,
+                Email = x.Email,
+                PhoneNumber = x.PhoneNumber,
+                Subject = x.Subject,
+                SlotStartTime = x.SlotStartTime.ToString(@"hh\:mm"),
+                Date = x.Schedule.Date.ToString("yyyy-MM-dd"),
+                DeletedAt = x.DeleteDate.HasValue ? x.DeleteDate.Value.ToString("yyyy-MM-dd HH:mm") : "NA"
+            }).ToListAsync();
+            return Json(responce);
         }
         [HttpGet]
         public IActionResult GetSlots(int scheduleId)

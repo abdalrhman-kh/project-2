@@ -10,7 +10,6 @@
         public String PhoneNumber {  get; set; }
         public String Email { get; set; }
         public TimeSpan SlotStartTime { get; set; }
-        public bool Status { get; set; } = true;
 
     }
 }
