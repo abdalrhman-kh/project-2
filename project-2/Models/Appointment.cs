@@ -10,6 +10,7 @@
         public String PhoneNumber {  get; set; }
         public String Email { get; set; }
         public TimeSpan SlotStartTime { get; set; }
+        public bool ReminderFlag { get; set; }
 
     }
 }

@@ -252,6 +252,9 @@ namespace project_2.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("ReminderFlag")
+                        .HasColumnType("bit");
+
                     b.Property<int>("ScheduleId")
                         .HasColumnType("int");
 

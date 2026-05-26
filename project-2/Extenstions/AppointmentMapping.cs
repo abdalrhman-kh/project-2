@@ -17,7 +17,8 @@ namespace project_2.Extenstions
                 Email = model.Email,
                 SlotStartTime = model.SlotStartTime,
                 StartTime = model.Schedule.Date.ToDateTime(TimeOnly.FromTimeSpan(model.SlotStartTime)),
-                EndTime = model.Schedule.Date.ToDateTime(TimeOnly.FromTimeSpan(model.SlotStartTime)).AddHours(1),
+                EndTime = model.Schedule.Date.ToDateTime(TimeOnly.FromTimeSpan(model.SlotStartTime)).AddMinutes(40),
+                ReminderFlag = model.ReminderFlag,
             };
         }
         public static Appointment ToModel(this AppointmentViewModel viewmodel)
@@ -31,6 +32,7 @@ namespace project_2.Extenstions
                 PhoneNumber = viewmodel.PhoneNumber,
                 Email = viewmodel.Email,
                 SlotStartTime = TimeSpan.Parse(viewmodel.SlotStartTimeString),
+                ReminderFlag = viewmodel.ReminderFlag,
             };
         }
         public static List<AppointmentViewModel> ToViewModelList(this List<Appointment> models)

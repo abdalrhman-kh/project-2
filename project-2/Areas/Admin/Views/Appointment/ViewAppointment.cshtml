@@ -278,7 +278,6 @@
                 async function loadCalendar(){
                     const response = await fetch("/Admin/appointment/GetDates");
                     const setDates = await response.json();
-                    const tableBody = document.getElementById("dataTableBody");
 
                     // Load ALL appointments on page load
                     await loadAppointments(null);

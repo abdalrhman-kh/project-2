@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using project_2.Data;
+using project_2.Helpers.BackGround;
 using project_2.Helpers.Email;
 using project_2.Helpers.ImageHelpers;
 using project_2.Helpers.OTPHelper;
@@ -17,6 +18,7 @@ builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<IImageHelper, ImageHelper>();
 builder.Services.AddScoped<IEmailSender, EmailSender>();
 builder.Services.AddScoped<IOTPHelper, OTPHelper>();
+builder.Services.AddHostedService<AppointmentReminder>();
 builder.Services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<DataDbContext>().AddDefaultTokenProviders();
 builder.Services.ConfigureApplicationCookie(x=> {
     x.LoginPath = "/Admin/Account/Login";

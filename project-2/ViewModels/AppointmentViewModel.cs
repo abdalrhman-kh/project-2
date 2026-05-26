@@ -27,5 +27,6 @@ namespace project_2.ViewModels
         public DateTime EndTime { get; set; }
         [ValidateNever]
         public List<SelectListItem> AvailableSlots { get; set; }
+        public bool ReminderFlag { get; set; }
     }
 }
