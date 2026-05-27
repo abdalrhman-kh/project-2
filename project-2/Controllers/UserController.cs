@@ -106,6 +106,15 @@ namespace project_2.Controllers
                 {
                     repo.Add(collection.AppointmentView.ToModel());
                     TempData["SuccessMessage"] = "Your appointment has been booked successfully.";
+                    var schedule = repoSchedule.Get(collection.AppointmentView.ScheduleId);
+                    string subject = "Appointment Confirmed";
+                    string body = $"Hello {collection.AppointmentView.PatientName}\n\n"+
+                        "this an email to confirm you have booked an appointment with the following\n"+
+                        $"subject: {collection.AppointmentView.Subject}\n"+
+                        $"date: {schedule.Date}\n"+
+                        $"time: {collection.AppointmentView.SlotStartTimeString}\n\n"+
+                        "Thank you for choosing our clinic.";
+                    emailSender.SendEmailAsync(collection.AppointmentView.Email, subject, body);
                     return RedirectToAction(nameof(Index));
                 }
                 collection.AppointmentView.SubjectList = new List<SelectListItem>
