@@ -52,6 +52,11 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(
+    name: "admin",
+    pattern: "admin",
+    defaults: new { area = "Admin", controller = "Appointment", action = "ViewAppointment" });
+
+app.MapControllerRoute(
     name: "areas",
     pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
 
