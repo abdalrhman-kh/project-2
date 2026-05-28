@@ -51,6 +51,10 @@
 		letter-spacing: 0.175em;
 		line-height: 2.5;
 	}
+
+	.container-fluid{
+		--bs-gutter-x: 0;
+	}
 </style>
 <header>
 	<nav class="navbar bg-body-tertiary fixed-top shadow">
@@ -67,101 +71,104 @@
 	</nav>
 </header>
 <body>
-		<div class="row position-relative">
-			<div class="d-flex justify-content-center align-items-center Formcontainer">
-				<div class="card shadow" style="width:36rem;">
-					<div class="card-body m-3">
-						<h3 class="card-title mb-4">Book an appointment</h3>
-						<form method="post" asp-action="Create" id="AppointmentForm">
-							<div class="row gtr-uniform">
-								<div class="col-12 mb-3">
-									<input asp-for="AppointmentView.PatientName" class="form-control" placeholder="Patient Name" />
-								<span asp-validation-for="AppointmentView.PatientName" class="text-danger"></span>
+	<div class="container-fluid pt-5 mt-3">
+		<div class="row justify-content-between align-items-center pt-5 mt-3">
+			<div class="col-md-auto" style="padding:0;">
+					<div class="card shadow" style="max-width: auto; max-height:auto;">
+						<div class="card-body text-center">
+							<h5 class="card-title">
+								Available Times <span class="tip" data-bs-placment="top" title="this only shows the first 5 time slots">
+									<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-question-circle" viewBox="0 0 16 16">
+										<path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" />
+										<path d="M5.255 5.786a.237.237 0 0 0 .241.247h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286m1.557 5.763c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94" />
+									</svg>
+								</span>
+							</h5>
+							<div class="d-flex justify-content-evenly">
+								<div class="d-flex flex-column align-items-center gap-2">
+									<strong id="today">Today </strong>
+									<div id="slots-today" class="d-flex flex-column gap-1"></div>
 								</div>
-								<div class="col-12 mb-3">
-								<input asp-for="AppointmentView.Email" class="form-control" placeholder="Email" />
-								<span asp-validation-for="AppointmentView.Email" class="text-danger"></span>
+								&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+								<div class="d-flex flex-column align-items-center gap-2">
+									<strong id="tomorrow"></strong>
+									<div id="slots-tomorrow" class="d-flex flex-column gap-1"></div>
 								</div>
-								<div class="col-12 mb-3">
-								<input asp-for="AppointmentView.PhoneNumber" class="form-control" placeholder="Phone Number" />
-								<span asp-validation-for="AppointmentView.PhoneNumber" class="text-danger"></span>
-								</div>
-								<div class="col-6">
-								<select asp-for="AppointmentView.Subject" class="form-control" asp-items="Model.AppointmentView.SubjectList"></select>
-								</div>
-								<div class="col-6">
-									<input type="text"
-										   id="scheduleDate"
-										   class="form-control"
-										   placeholder="Select available date"
-										   readonly />
-								<input type="hidden" asp-for="AppointmentView.ScheduleId" id="scheduleId" />
-								</div>
-								<div class="col-6">
-								<select asp-for="AppointmentView.SlotStartTimeString"
-										asp-items="Model.AppointmentView.AvailableSlots"
-											class="form-control"
-											id="slotSelect"
-											disabled>
-										<option value="">-- Select Time Slot --</option>
-									</select>
-								</div>
-								<div class="col-12 d-grid gap-2">
-									<ul class="actions">
-										<li><input type="submit" value="Book Appointment" class="primary" /></li>
-										<li><input type="reset" value="Reset" /></li>
-									</ul>
+								&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+								<div class="d-flex flex-column align-items-center gap-2">
+									<strong id="theDayAfter"></strong>
+									<div id="slots-theDayAfter" class="d-flex flex-column gap-1"></div>
 								</div>
 							</div>
-						</form>
+						</div>
 					</div>
 				</div>
-			</div>
-		</div>
-		<div class="mb-4 Doctor-Card">
-			<div class="card shadow" style="max-width: 450px; max-height:auto;">
-				<div class="card-body text-center p-5 d-flex flex-column">
-					<img class="card-img-top" src="~/@Model.DentistView.DentistImage" alt="Dentist Image">
-					<div class="card-body">
-						<h5 class="card-title">Info Card</h5>
-						<p class="card-text text-start" id="Paragraph">
-						<span>Name: @Model.DentistView.Name</span><br />
-						<span>Experience: @Model.DentistView.Experience years</span><br />
-						<span>Collage: @Model.DentistView.Collage</span><br />
-						<span>Email: @Model.DentistView.Email</span><br />
-						<span>PhoneNumber: @Model.DentistView.PhoneNumber</span><br />
-						</p>
+			<div class="col-lg-auto" style="padding:0;">
+					<div class="card shadow" style="width:32rem;">
+						<div class="card-body m-3">
+							<h3 class="card-title mb-4">Book an appointment</h3>
+							<form method="post" asp-action="Create" id="AppointmentForm">
+								<div class="row gtr-uniform">
+									<div class="col-12 mb-3">
+										<input asp-for="AppointmentView.PatientName" class="form-control" placeholder="Patient Name" />
+										<span asp-validation-for="AppointmentView.PatientName" class="text-danger"></span>
+									</div>
+									<div class="col-12 mb-3">
+										<input asp-for="AppointmentView.Email" class="form-control" placeholder="Email" />
+										<span asp-validation-for="AppointmentView.Email" class="text-danger"></span>
+									</div>
+									<div class="col-12 mb-3">
+										<input asp-for="AppointmentView.PhoneNumber" class="form-control" placeholder="Phone Number" />
+										<span asp-validation-for="AppointmentView.PhoneNumber" class="text-danger"></span>
+									</div>
+									<div class="col-6">
+										<select asp-for="AppointmentView.Subject" class="form-control" asp-items="Model.AppointmentView.SubjectList"></select>
+									</div>
+									<div class="col-6">
+										<input type="text"
+											   id="scheduleDate"
+											   class="form-control"
+											   placeholder="Select available date"
+											   readonly />
+										<input type="hidden" asp-for="AppointmentView.ScheduleId" id="scheduleId" />
+									</div>
+									<div class="col-6">
+										<select asp-for="AppointmentView.SlotStartTimeString"
+												asp-items="Model.AppointmentView.AvailableSlots"
+												class="form-control"
+												id="slotSelect"
+												disabled>
+											<option value="">-- Select Time Slot --</option>
+										</select>
+									</div>
+									<div class="col-12 d-grid gap-2">
+										<ul class="actions">
+											<li><input type="submit" value="Book Appointment" class="primary" /></li>
+											<li><input type="reset" value="Reset" /></li>
+										</ul>
+									</div>
+								</div>
+							</form>
+						</div>
 					</div>
 				</div>
-			</div>
-		</div>
-
-	<div class="mb-4 Abt-Card">
-		<div class="card shadow" style="max-width: 450px; max-height:auto;">
-			<div class="card-body text-center p-5 d-flex flex-column">
-				<h5 class="card-title">Available Times <span class="tip" data-bs-placment="top" title="this only shows the first 5 time slots">
-						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-question-circle" viewBox="0 0 16 16">
-							<path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" />
-							<path d="M5.255 5.786a.237.237 0 0 0 .241.247h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286m1.557 5.763c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94" />
-						</svg>
-				</span></h5>
-				<div class="d-flex justify-content-evenly">
-					<div class="d-flex flex-column align-items-center gap-2">
-						<strong id="today">Today </strong>
-						<div id="slots-today" class="d-flex flex-column gap-1"></div>
-					</div>
-					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-					<div class="d-flex flex-column align-items-center gap-2">
-						<strong id="tomorrow"></strong>
-						<div id="slots-tomorrow" class="d-flex flex-column gap-1"></div>
-					</div>
-					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-					<div class="d-flex flex-column align-items-center gap-2">
-						<strong id="theDayAfter"></strong>
-						<div id="slots-theDayAfter" class="d-flex flex-column gap-1"></div>
-					</div>
+			<div class="col-md-auto" style="padding:0;">
+						<div class="card shadow" style="max-width: 450px; max-height:auto;">
+							<div class="card-body text-center p-5 d-flex flex-column">
+								<img class="card-img-top" src="~/@Model.DentistView.DentistImage" alt="Dentist Image">
+								<div class="card-body">
+									<h5 class="card-title">Info Card</h5>
+									<p class="card-text text-start" id="Paragraph">
+										<span>Name: @Model.DentistView.Name</span><br />
+										<span>Experience: @Model.DentistView.Experience years</span><br />
+										<span>Collage: @Model.DentistView.Collage</span><br />
+										<span>Email: @Model.DentistView.Email</span><br />
+										<span>PhoneNumber: @Model.DentistView.PhoneNumber</span><br />
+									</p>
+								</div>
+							</div>
+						</div>
 				</div>
-			</div>
 		</div>
 	</div>
 
@@ -196,7 +203,7 @@
 						<button type="button" id="PopupSubmit" class="primary w-100" onclick="RequestOTP()">Search appointments</button>
 					</div>
 					<div id="OTPModel" style="display:none;">
-						<div class="container height-100 d-flex justify-content-center align-items-center">
+						<div class="container-fluid height-100 d-flex justify-content-center align-items-center">
 							<div class="position-relative">
 								<div class="card p-2 text-center">
 									<h6>Please enter the one time password <br> to verify your account</h6>
