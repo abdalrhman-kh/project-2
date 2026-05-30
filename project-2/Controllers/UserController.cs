@@ -117,20 +117,25 @@ namespace project_2.Controllers
                     emailSender.SendEmailAsync(collection.AppointmentView.Email, subject, body);
                     return RedirectToAction(nameof(Index));
                 }
+                else
+                {
+                    TempData["ErrorMessage"] = "An error occurred while booking the appointment.";
+                }
                 collection.AppointmentView.SubjectList = new List<SelectListItem>
-                    {
-                        new SelectListItem { Text = "-- Chose --", Value = "-- Chose --" },
-                        new SelectListItem { Text = "Dental Check-up", Value = "Dental Check-up" },
-                        new SelectListItem { Text = "Teeth Cleaning", Value = "Teeth Cleaning" },
-                        new SelectListItem { Text = "Tooth Filling", Value = "Tooth Filling" },
-                        new SelectListItem { Text = "Tooth Extraction", Value = "Tooth Extraction" },
-                        new SelectListItem { Text = "Root Canal Treatment", Value = "Root Canal" },
-                        new SelectListItem { Text = "Dental Pain", Value = "Dental Pain" },
-                        new SelectListItem { Text = "Consultation", Value = "Consultation" },
-                        new SelectListItem { Text = "Cosmetic Dentistry", Value = "Cosmetic" },
-                        new SelectListItem { Text = "Follow-up Appointment", Value = "Follow-up" },
-                        new SelectListItem { Text = "Other", Value = "Other" }
-                    };
+                {
+                    new SelectListItem { Text = "-- Chose --", Value = "-- Chose --" },
+                    new SelectListItem { Text = "Dental Check-up", Value = "Dental Check-up" },
+                    new SelectListItem { Text = "Teeth Cleaning", Value = "Teeth Cleaning" },
+                    new SelectListItem { Text = "Tooth Filling", Value = "Tooth Filling" },
+                    new SelectListItem { Text = "Tooth Extraction", Value = "Tooth Extraction" },
+                    new SelectListItem { Text = "Root Canal Treatment", Value = "Root Canal" },
+                    new SelectListItem { Text = "Dental Pain", Value = "Dental Pain" },
+                    new SelectListItem { Text = "Consultation", Value = "Consultation" },
+                    new SelectListItem { Text = "Cosmetic Dentistry", Value = "Cosmetic" },
+                    new SelectListItem { Text = "Follow-up Appointment", Value = "Follow-up" },
+                    new SelectListItem { Text = "Other", Value = "Other" }
+                };
+                collection.DentistView = repoDentist.GetAll().FirstOrDefault().ToViewModel();
 
                 return View("Index", collection);
             }
