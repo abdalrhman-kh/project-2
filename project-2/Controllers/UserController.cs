@@ -229,7 +229,7 @@ namespace project_2.Controllers
         [HttpGet]
         public async Task<IActionResult> GetDates()
         {
-            var dates = await dbContext.Schedule.Select(x => x.Date.ToString("yyyy-MM-dd")).ToListAsync();
+            var dates = await dbContext.Schedule.Where(x=>x.Status).Select(x => x.Date.ToString("yyyy-MM-dd")).ToListAsync();
             return Json(dates);
         }
 
