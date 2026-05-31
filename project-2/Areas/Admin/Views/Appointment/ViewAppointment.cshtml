@@ -64,7 +64,13 @@
                                     <small id="confirmedMonth" class="text-muted mt-1"></small>
                                     <small id="canceldMonth" class="text-muted mt-1"></small>
 
-                                    <span id="statsLabelToday" class="pt-2">Appointments today</span>
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span id="statsLabelToday" class="pt-2">Appointments today</span>
+                                        <span id="statsCountToday"></span>
+                                    </div>
+                                    <div style="background:#e9ecef; border-radius:4px; height:8px; width:100%;">
+                                        <div id="progressBarToday" style="height:8px; border-radius:4px; transition: width 0.6s ease;"></div>
+                                    </div>
                                     <small id="dayCountConfirmed" class="text-muted mt-1"></small>
                                     <small id="dayCountCanceld" class="text-muted mt-1"></small>
                                 </div>
@@ -176,6 +182,10 @@
                                 <input asp-for="PatientName" id="addName" class="form-control" placeholder="Patient Name" />
                                 <span asp-validation-for="PatientName" class="text-danger"></span>
                             </div>
+                            <div class="col-12 mb-3">
+                                <input asp-for="PhoneNumber" id="addPhone" class="form-control" placeholder="Phone number" />
+                                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                            </div>
                             <div class="col-6 mb-3">
                                 <select asp-for="Subject" id="addSubject" class="form-control" asp-items="Model.SubjectList"></select>
                             </div>
@@ -199,7 +209,6 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-primary" onclick="ConfirmAdd()">Add</button>
-                            <button type="button" class="btn btn-danger" onclick="ConfirmDelete()">DELETE</button>
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                         </div>
                     </form>
@@ -399,6 +408,7 @@
                     const viewmodel = {
                         AppointmentId: document.getElementById("addId").value,
                         PatientName: document.getElementById("addName").value,
+                        phoneNumber: document.getElementById("addPhone").value,
                         Subject: document.getElementById("addSubject").value,
                         ScheduleId: document.getElementById("addDate").value,
                         SlotStartTimeString: document.getElementById("addTime").value
@@ -569,19 +579,31 @@
                 const data = await res.json();
 
                 const bar = document.getElementById("progressBar");
-                const color = "#1E90FF";
+                const barToday = document.getElementById("progressBarToday");
+                const colorBlue = "#1E90FF";
+                const colorRed = "#fc1212";
+                const colorYellow = "#fce112";
+                const colorGreen = "#12fc7b"
 
                 document.getElementById("statsCount").textContent = `${data.active} / ${data.total}`;
-                document.getElementById("dayCountConfirmed").textContent = `confirmed count ${data.totalToday} `;
-                document.getElementById("dayCountCanceld").textContent = `canceld count ${data.totalTodaycanceld} `;
+                document.getElementById("statsCountToday").textContent = `${data.activeToday} / ${data.totalToday}`;
+                document.getElementById("dayCountConfirmed").textContent = `${data.percentToday}% confirmed`;
+                document.getElementById("dayCountCanceld").textContent = `${100 -data.percentToday}% canceld`;
                 document.getElementById("month").textContent = `${data.month} — `;
                 document.getElementById("confirmedMonth").textContent = `${data.percent}% confirmed/finished`;
                 document.getElementById("canceldMonth").textContent = `${100 - data.percent}% canceld`;
 
                 setTimeout(() => {
-                    bar.style.background= color;
+                    bar.style.background = colorBlue;
                     bar.style.width = `${data.percent}%`;
-                    document.getElementById("progressBar").style.width = `${data.percentage}%`;
+                    console.log("percent: ", data.percentToday);
+                    if(data.percentToday >= 65)
+                    barToday.style.background = colorGreen;
+                    else if (data.percentToday <= 35)
+                    barToday.style.background = colorRed;
+                    else
+                    barToday.style.background = colorYellow;
+                    barToday.style.width = `${data.percentToday}%`;
                 }, 100);
             }
             loadStats();

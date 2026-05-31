@@ -16,6 +16,8 @@ namespace project_2.Areas.Admin.ViewModels
         [ValidateNever]
         public List<SelectListItem> SubjectList { get; set; }
         public String PatientName { get; set; }
+        [RegularExpression(@"^07[789]\d{7}$", ErrorMessage = "Invalid phone number")]
+        public String PhoneNumber { get; set; }
         public string SlotStartTimeString { get; set; }
         public TimeSpan SlotStartTime { get; set; }
         public DateTime StartTime { get; set; }

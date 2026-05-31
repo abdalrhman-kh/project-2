@@ -180,7 +180,7 @@ namespace project_2.Areas.Admin.Controllers
                 {
                     PatientName = viewModel.PatientName,
                     Email = "N/A",
-                    PhoneNumber = "N/A",
+                    PhoneNumber = viewModel.PhoneNumber,
                     Subject = viewModel.Subject,
                     ScheduleId = viewModel.ScheduleId,
                     SlotStartTime = TimeSpan.Parse(viewModel.SlotStartTimeString),
@@ -269,8 +269,10 @@ namespace project_2.Areas.Admin.Controllers
         [HttpGet]
         public async Task<IActionResult> GetCanceled()
         {
-            var today = DateOnly.FromDateTime(DateTime.Today);
-            var data = dbContext.Appointment.Include(x => x.Schedule).Where(x => x.IsDeleted && x.Schedule.Date >= today);
+            var date = DateTime.Today;
+            var firstDay = new DateOnly(date.Year, date.Month, 1);
+            var lastDay = new DateOnly(date.Year, date.Month, DateTime.DaysInMonth(date.Year, date.Month));
+            var data = dbContext.Appointment.Include(x => x.Schedule).Where(x => x.IsDeleted && x.Schedule.Date >= firstDay && x.Schedule.Date <= lastDay);
             var responce = await data.Select(x => new
             {
                 Id = x.Id,
@@ -306,7 +308,9 @@ namespace project_2.Areas.Admin.Controllers
             var firstDay = new DateOnly(date.Year, date.Month, 1);
             var lastDay = new DateOnly(date.Year, date.Month, DateTime.DaysInMonth(date.Year, date.Month));
 
-            var totalToday = await dbContext.Appointment.Include(x => x.Schedule).Where(x => !x.IsDeleted && x.Schedule.Date == today && x.Schedule.Date <= lastDay).CountAsync();
+            var totalToday = await dbContext.Appointment.Include(x => x.Schedule).Where(x => x.Schedule.Date == today && x.Schedule.Date <= lastDay).CountAsync();
+
+            var activeToday = await dbContext.Appointment.Include(x => x.Schedule).Where(x => !x.IsDeleted && x.Schedule.Date == today && x.Schedule.Date <= lastDay).CountAsync();
 
             var totalTodaycanceld = await dbContext.Appointment.Include(x => x.Schedule).Where(x => x.IsDeleted && x.Schedule.Date == today && x.Schedule.Date <= lastDay).CountAsync();
 
@@ -315,6 +319,7 @@ namespace project_2.Areas.Admin.Controllers
             var active = await dbContext.Appointment.Include(x => x.Schedule).Where(x => !x.IsDeleted && x.Schedule.Date >= firstDay && x.Schedule.Date <= lastDay).CountAsync();
 
             var percent = (int)((double) active / total * 100);
+            var percentToday = (int)((double)activeToday / totalToday * 100);
 
             return Json(new
             {
@@ -322,7 +327,9 @@ namespace project_2.Areas.Admin.Controllers
                 TotalToday = totalToday,
                 TotalTodaycanceld = totalTodaycanceld,
                 Active = active,
+                ActiveToday = activeToday,
                 Percent = percent,
+                percentToday = percentToday,
                 Month = today.ToString("MMMM")
             });
         }
