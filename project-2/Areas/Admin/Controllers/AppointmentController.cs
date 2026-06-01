@@ -232,6 +232,12 @@ namespace project_2.Areas.Admin.Controllers
             return Json(dates);
         }
         [HttpGet]
+        public async Task<IActionResult> GetSchedule(int scheduleId)
+        {
+            var data = await dbContext.Schedule.Where(x => x.Status && x.Id == scheduleId).Select(x => x.Date.ToString("yyyy-MM-dd")).ToListAsync();
+            return Json(data);
+        }
+        [HttpGet]
         public async Task<IActionResult> FindDates(DateOnly Date)
         {
             var dates = await dbContext.Schedule.Where(x=>x.Date == Date).Select(x => new
@@ -257,6 +263,7 @@ namespace project_2.Areas.Admin.Controllers
             var responce = await data.Select(x=> new 
             {
                 Id = x.Id,
+                scheduleId = x.ScheduleId,
                 PatientName = x.PatientName,
                 Email = x.Email,
                 PhoneNumber = x.PhoneNumber,
@@ -318,8 +325,8 @@ namespace project_2.Areas.Admin.Controllers
 
             var active = await dbContext.Appointment.Include(x => x.Schedule).Where(x => !x.IsDeleted && x.Schedule.Date >= firstDay && x.Schedule.Date <= lastDay).CountAsync();
 
-            var percent = (int)((double) active / total * 100);
-            var percentToday = (int)((double)activeToday / totalToday * 100);
+            var percent = (total == 0) ? 0 : (int)((double) active / total * 100);
+            var percentToday = (totalToday == 0)? 0 : (int)((double)activeToday / totalToday * 100);
 
             return Json(new
             {

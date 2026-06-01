@@ -202,20 +202,22 @@ namespace project_2.Controllers
                     if (String.IsNullOrEmpty(model.Email))
                         return BadRequest("Email and phone number are required");
                     var Appointments = dbContext.Appointment.Include(x=>x.Schedule).Where(x=>!x.IsDeleted && x.Email ==  model.Email && x.Schedule.Date >= today).ToList();
-                    if (Appointments.Count == 0)
-                        return BadRequest("No appointments found");
+                    //if (Appointments.Count == 0)
+                    //    return BadRequest("No appointments found");
                     List<AppointmentViewModel> AppointmentList = new List<AppointmentViewModel>();
                     foreach (var item in Appointments)
                     {
                         var obj = new AppointmentViewModel
                         {
                             AppointmentId = item.Id,
+                            ScheduleId = item.ScheduleId,
                             Subject = item.Subject,
                             PatientName = item.PatientName,
                             Email = item.Email,
                             PhoneNumber = item.PhoneNumber,
                             StartTime = repoSchedule.Get(item.ScheduleId).Date.ToDateTime(TimeOnly.FromTimeSpan(item.SlotStartTime)),
-                            EndTime = repoSchedule.Get(item.ScheduleId).Date.ToDateTime(TimeOnly.FromTimeSpan(item.SlotStartTime).AddMinutes(15)),
+                            EndTime = repoSchedule.Get(item.ScheduleId).Date.ToDateTime(TimeOnly.FromTimeSpan(item.SlotStartTime).AddMinutes(40)),
+                            SlotStartTimeString = TimeOnly.FromTimeSpan(item.SlotStartTime).ToString("HH:mm"),
                         };
                         AppointmentList.Add(obj);
                     }
@@ -232,7 +234,6 @@ namespace project_2.Controllers
             var dates = await dbContext.Schedule.Where(x=>x.Status).Select(x => x.Date.ToString("yyyy-MM-dd")).ToListAsync();
             return Json(dates);
         }
-
         [HttpGet]
         public async Task<IActionResult> GetNextAvailableDates()
         {
@@ -248,7 +249,11 @@ namespace project_2.Controllers
 
             return Json(dates);
         }
-
+        [HttpGet]
+        public async Task<IActionResult> GetSchedule(int scheduleId) {
+            var data = await dbContext.Schedule.Where(x => x.Status && x.Id == scheduleId).Select(x => x.Date.ToString("yyyy-MM-dd")).ToListAsync();
+            return Json(data);
+        }
         [HttpGet]
         public async Task<IActionResult> FindDates(DateOnly Date)
         {
@@ -264,13 +269,13 @@ namespace project_2.Controllers
             return Json(dates);
         }
         [HttpPost]
-        public async Task<IActionResult> EditApt([FromBody] UserViewModels viewModel)
+        public async Task<IActionResult> EditApt([FromBody] AppointmentViewModel viewModel)
         {
             if (ModelState.IsValid)
             {
 
-                var data = viewModel.AppointmentView.ToModel();
-                var oldModel = repo.Get(viewModel.AppointmentView.AppointmentId);
+                var data = viewModel.ToModel();
+                var oldModel = repo.Get(viewModel.AppointmentId);
                 data.Schedule = repoSchedule.Get(data.ScheduleId);
                 oldModel.Schedule = repoSchedule.Get(oldModel.ScheduleId);
                 string subject = "Appointment changed";

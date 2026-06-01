@@ -357,14 +357,17 @@
                     $('#AddModel').modal('show');
                 }
 
-                function openEditModal(data){
+                async function openEditModal(data){
+                    var res = await fetch(`/Admin/appointment/GetSchedule?scheduleId=${data.scheduleId}`);
+                    var scheduleData = await res.json();
+
                     document.getElementById("editId").value = data.id;
                     document.getElementById("editName").value = data.patientName;
                     document.getElementById("editEmail").value = data.email;
                     document.getElementById("editPhone").value = data.phoneNumber;
                     document.getElementById("editSubject").value = data.subject;
-                    document.getElementById("editDate").value = data.date;
-                    document.getElementById("editTime").value = data.slotStartTime;
+                    console.log("Date: ". scheduleData)
+                    document.getElementById("scheduleDate")._flatpickr.setDate(scheduleData,true);
 
                     $('#EditModel').modal('show');
                 }
@@ -588,7 +591,10 @@
                 document.getElementById("statsCount").textContent = `${data.active} / ${data.total}`;
                 document.getElementById("statsCountToday").textContent = `${data.activeToday} / ${data.totalToday}`;
                 document.getElementById("dayCountConfirmed").textContent = `${data.percentToday}% confirmed`;
-                document.getElementById("dayCountCanceld").textContent = `${100 -data.percentToday}% canceld`;
+                if(data.totalTodaycanceld != 0)
+                document.getElementById("dayCountCanceld").textContent = `${100 - data.percentToday}% canceld`;
+                else
+                document.getElementById("dayCountCanceld").textContent = `${data.totalTodaycanceld}% canceld`;
                 document.getElementById("month").textContent = `${data.month} — `;
                 document.getElementById("confirmedMonth").textContent = `${data.percent}% confirmed/finished`;
                 document.getElementById("canceldMonth").textContent = `${100 - data.percent}% canceld`;

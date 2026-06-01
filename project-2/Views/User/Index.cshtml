@@ -230,7 +230,7 @@
 					</div>
 					<div id="noResults" style="display: none;">
 						<div class="alert alert-warning">
-							No appointments found with this email and phone number.
+							No appointments found with this email.
 						</div>
 						<button type="button" class="btn btn-secondary" onclick="resetSearch()">
 							Try Again
@@ -317,9 +317,12 @@
 		}, 4000);
 	</script>
 	<script>
+		let currentTime = null;
+
 		async function loadDates(){
 			const response = await fetch("/User/GetDates");
 			const setDates = await response.json();
+
 
 			flatpickr("#scheduleDate", {
 				enable: setDates,
@@ -375,6 +378,13 @@
 							});
 							slotSelect.disabled = false;
 						});
+						const option = document.createElement("option");
+						option.value = currentTime;
+						option.text = currentTime;
+						slotSelect.appendChild(option);
+
+						slotSelect.value = currentTime;
+						currentTime = null;
 				}
 			});
 		}
@@ -556,14 +566,19 @@
 			 document.getElementById('appointmentResults').style.display = 'block';
 		}
 
-		function openEditModal(data){
+		async function openEditModal(data){
+			var res = await fetch(`/User/GetSchedule?scheduleId=${data.scheduleId}`);
+			var scheduleData = await res.json();
+			console.log("scheduleData: ", scheduleData)
+
 			document.getElementById("editId").value = data.appointmentId;
 			document.getElementById("editName").value = data.patientName;
 			document.getElementById("editEmail").value = data.email;
 			document.getElementById("editPhone").value = data.phoneNumber;
 			document.getElementById("editSubject").value = data.subject;
-			document.getElementById("editDate").value = data.date;
-			document.getElementById("editTime").value = data.slotStartTime;
+			currentTime = new Date(data.startTime).toTimeString().slice(0,5);
+			document.getElementById("editScheduleDate")._flatpickr.setDate(scheduleData,true);
+			document.getElementById("editTime").disabled = false;
 
 			$('#ViewAppointmentpopup').modal('hide');
 
