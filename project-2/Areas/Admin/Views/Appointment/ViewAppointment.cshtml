@@ -62,7 +62,7 @@
                                     </div>
                                     <small id="month" class="text-muted mt-1"></small>
                                     <small id="confirmedMonth" class="text-muted mt-1"></small>
-                                    <small id="canceldMonth" class="text-muted mt-1"></small>
+                                    <small id="canceled Month" class="text-muted mt-1"></small>
 
                                     <div class="d-flex justify-content-between mb-1">
                                         <span id="statsLabelToday" class="pt-2">Appointments today</span>
@@ -72,7 +72,7 @@
                                         <div id="progressBarToday" style="height:8px; border-radius:4px; transition: width 0.6s ease;"></div>
                                     </div>
                                     <small id="dayCountConfirmed" class="text-muted mt-1"></small>
-                                    <small id="dayCountCanceld" class="text-muted mt-1"></small>
+                                    <small id="dayCountcanceled " class="text-muted mt-1"></small>
                                 </div>
                             </div>
                             <div class="col-12 col-md-12 col-lg-6 order-1 order-md-2 ml-5">
@@ -599,13 +599,16 @@
                 document.getElementById("statsCount").textContent = `${data.active} / ${data.total}`;
                 document.getElementById("statsCountToday").textContent = `${data.activeToday} / ${data.totalToday}`;
                 document.getElementById("dayCountConfirmed").textContent = `${data.percentToday}% confirmed`;
-                if(data.totalTodaycanceld != 0)
-                document.getElementById("dayCountCanceld").textContent = `${100 - data.percentToday}% canceld`;
+                if(data.totalTodaycanceled  != 0)
+                document.getElementById("dayCountcanceled ").textContent = `${100 - data.percentToday}% canceled `;
                 else
-                document.getElementById("dayCountCanceld").textContent = `${data.totalTodaycanceld}% canceld`;
+                document.getElementById("dayCountcanceled ").textContent = `${data.totalTodaycanceled }% canceled `;
                 document.getElementById("month").textContent = `${data.month} — `;
                 document.getElementById("confirmedMonth").textContent = `${data.percent}% confirmed/finished`;
-                document.getElementById("canceldMonth").textContent = `${100 - data.percent}% canceld`;
+                if(data.canceled != 0)
+                document.getElementById("canceled Month").textContent = `${100 - data.percent}% canceled `;
+                else
+                document.getElementById("canceled Month").textContent = `${data.canceled}% canceled `;
 
                 setTimeout(() => {
                     bar.style.background = colorBlue;

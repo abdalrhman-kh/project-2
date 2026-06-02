@@ -322,6 +322,8 @@ namespace project_2.Areas.Admin.Controllers
 
             var total = await dbContext.Appointment.Include(x => x.Schedule).Where(x => x.Schedule.Date >= firstDay && x.Schedule.Date <= lastDay).CountAsync();
 
+            var cancled = await dbContext.Appointment.Include(x => x.Schedule).Where(x => x.IsDeleted && x.Schedule.Date >= firstDay && x.Schedule.Date <= lastDay).CountAsync();
+
             var active = await dbContext.Appointment.Include(x => x.Schedule).Where(x => !x.IsDeleted && x.Schedule.Date >= firstDay && x.Schedule.Date <= lastDay).CountAsync();
 
             var percent = (total == 0) ? 0 : (int)((double) active / total * 100);
@@ -333,6 +335,7 @@ namespace project_2.Areas.Admin.Controllers
                 TotalToday = totalToday,
                 TotalTodaycanceld = totalTodaycanceld,
                 Active = active,
+                cancled = cancled,
                 ActiveToday = activeToday,
                 Percent = percent,
                 percentToday = percentToday,
