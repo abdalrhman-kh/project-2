@@ -248,6 +248,17 @@ namespace project_2.Controllers
 
             return Json(dates);
         }
+        public IActionResult GenerateNextSlot(int id)
+        {
+            var appointment = repo.Get(id);
+            appointment.Schedule = repoSchedule.Get(appointment.ScheduleId);
+            var nextSlot = $"{appointment.SlotStartTime:hh\\:mm} - {appointment.SlotStartTime.Add(TimeSpan.FromMinutes(40)):hh\\:mm}";
+            return Json(new
+            {
+                date = appointment.Schedule.Date,
+                currentTime = nextSlot,
+            });
+        }
         [HttpGet]
         public async Task<IActionResult> GetSchedule(int scheduleId) {
             var data = await dbContext.Schedule.Where(x => x.Status && x.Id == scheduleId).Select(x => x.Date.ToString("yyyy-MM-dd")).ToListAsync();

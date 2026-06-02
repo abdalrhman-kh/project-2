@@ -289,9 +289,9 @@
 							</div>
 						</div>
 						<div class="modal-footer">
-							<button type="button" class="btn secondary" onclick="resetSearch()" data-bs-dismiss="modal">Cancel</button>
-							<button type="button" class="btn primary" onclick="ConfirmEdit()">Edit</button>
-							<button type="button" class="btn danger" onclick="ConfirmDelete()">DELETE</button>
+							<button type="button" class="btn secondary" onclick="BackFromEdit()">back</button>
+							<button type="button" class="btn secondary" onclick="ConfirmEdit()">Edit</button>
+							<button type="button" class="btn primary" onclick="ConfirmDelete()">DELETE</button>
 						</div>
 					</form>
 				</div>
@@ -317,8 +317,6 @@
 		}, 4000);
 	</script>
 	<script>
-		let currentTime = null;
-
 		async function loadDates(){
 			const response = await fetch("/User/GetDates");
 			const setDates = await response.json();
@@ -362,14 +360,23 @@
 					const data = await selected.json();
 
 					document.getElementById("editDate").value = data.id;
-
+					const id = document.getElementById("editId").value;
 					const slotSelect = document.getElementById("editTime");
 					slotSelect.innerHTML = '<option value="">-- Select Time Slot --</option>';
 					slotSelect.disabled = true;
 
+					const slotres = await fetch(`/User/GenerateNextSlot?id=${id}`)
+					const slot = await slotres.json();
 					await fetch(`/User/GetSlots?scheduleId=${data.id}`)
 						.then(res => res.json())
 						.then(data => {
+							if(slot.date == dateStr){
+								const select =document.createElement("option");
+								select.value = slot.currentTime;
+								select.text = slot.currentTime;
+								slotSelect.appendChild(select);
+								slotSelect.value = slot.currentTime;
+							}
 							data.forEach(slot => {
 								const option = document.createElement("option");
 								option.value = slot.value;
@@ -378,15 +385,6 @@
 							});
 							slotSelect.disabled = false;
 						});
-						if(currentTime != null){
-							const option = document.createElement("option");
-							option.value = currentTime;
-							option.text = currentTime;
-							slotSelect.appendChild(option);
-
-							slotSelect.value = currentTime;
-							currentTime = null;
-						}
 				}
 			});
 		}
@@ -571,7 +569,6 @@
 		async function openEditModal(data){
 			var res = await fetch(`/User/GetSchedule?scheduleId=${data.scheduleId}`);
 			var scheduleData = await res.json();
-			console.log("scheduleData: ", scheduleData)
 
 			document.getElementById("editId").value = data.appointmentId;
 			document.getElementById("editName").value = data.patientName;
@@ -667,6 +664,11 @@
 					}
 				}
 			});
+		}
+
+		function BackFromEdit(){
+			$('#EditModel').modal('hide');
+			$('#ViewAppointmentpopup').modal('show');
 		}
 
 		function resetSearch(){
