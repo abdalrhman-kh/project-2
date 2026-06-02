@@ -153,8 +153,8 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-primary" onclick="ConfirmEdit()">Edit</button>
-                            <button type="button" class="btn btn-danger" onclick="ConfirmDelete()">DELETE</button>
+                            <button id="editbtn" type="button" class="btn btn-primary" onclick="ConfirmEdit()">Edit</button>
+                            <button id="deletebtn" type="button" class="btn btn-danger" onclick="ConfirmDelete()">DELETE</button>
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                         </div>
                     </form>
@@ -471,6 +471,8 @@
                     cancelButtonColor: "#d33",
                     confirmButtonText: "Yes, Edit it!"
                     }).then( async (result) => {
+                        document.getElementById("editbtn").disabled = true;
+                        document.getElementById("deletebtn").disabled = true;
                         if (result.isConfirmed){
                             const response = await fetch(`/Admin/appointment/EditApt`,{
                                 method:"POST",
@@ -495,6 +497,8 @@
                                 });
                             }
                         }
+                        document.getElementById("editbtn").disabled = false;
+                        document.getElementById("deletebtn").disabled = false;
                     });
             }
             function clearDateFilter() {

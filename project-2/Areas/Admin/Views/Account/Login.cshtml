@@ -361,12 +361,13 @@
                 <div class="input-box">
                     <div class="inputs">
                         <input asp-for="Email" placeholder="Email" />
-                        <span asp-validation-for="Email" class="text-danger"></span>
                     </div>
                     <div class="form-control">
                         <input asp-for="Password" placeholder="Password" />
-                        <span asp-validation-for="Password" class="text-danger"></span>
                         <a class="forgot_link" asp-action="ChangePassword" asp-controller="Account" asp-area="Admin">Forgot password?</a>
+                    </div>
+                    <div class="form-control">
+                        <div asp-validation-summary="All" class="text-danger"></div>
                     </div>
                 </div>
                 <button type="submit">Sign In</button>

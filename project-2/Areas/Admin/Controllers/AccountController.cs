@@ -113,7 +113,9 @@ namespace project_2.Areas.Admin.Controllers
             {
                 return RedirectToAction("ViewAppointment", "Appointment");
             }
-            return View();
+            if(model.Email !=null && model.Password != null)
+            ModelState.AddModelError("","Invalid email or password");
+            return View(model);
         }
         public async Task<IActionResult> LogOut()
         {
