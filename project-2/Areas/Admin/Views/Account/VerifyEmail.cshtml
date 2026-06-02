@@ -350,7 +350,7 @@
                         <span asp-validation-for="Email" class="text-danger"></span>
                     </div>
                 </div>
-                <button type="button" class="" data-bs-toggle="modal" data-bs-target="#VerifyEmailModel" onclick="RequestOTP()">
+                <button type="button" onclick="RequestOTP()">
                     Verify Email
                 </button>
             </form>
@@ -408,6 +408,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="~/assets/js/jquery.min.js"></script>
     <script>
 
         function resetSearch(){
@@ -421,7 +422,6 @@
 
         async function RequestOTP(){
             const email = document.getElementById("Email").value;
-            document.getElementById('OTPModel').style.display = 'block';
 
             if (!email) {
                 Swal.fire("Error", "Please enter email");
@@ -433,8 +433,9 @@
                 body: JSON.stringify({ email: email })
             });
 
-
             if(data.ok){
+                $('#VerifyEmailModel').modal('show');
+                document.getElementById('OTPModel').style.display = 'block';
                 var responce =  await fetch('/Admin/Account/RequestOtp', {
                     method: "POST",
                     headers: { 'Content-Type': 'application/json' },

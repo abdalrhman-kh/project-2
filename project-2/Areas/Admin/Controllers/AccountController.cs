@@ -57,8 +57,7 @@ namespace project_2.Areas.Admin.Controllers
 
                 if (GetUser == null)
                 {
-                    ModelState.AddModelError("", "User not found");
-                    return BadRequest();
+                    return BadRequest(new {message = "User not found"});
                 }
 
                 else

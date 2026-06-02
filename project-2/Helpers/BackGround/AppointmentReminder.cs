@@ -31,21 +31,28 @@ namespace project_2.Helpers.BackGround
 
             var tomorrow = DateOnly.FromDateTime(DateTime.Today.AddDays(1));
 
-            var appointments = await dbcontext.Appointment.Include(x => x.Schedule).Where(x => !x.IsDeleted && !x.ReminderFlag && x.Schedule.Date == tomorrow).ToListAsync();
+            var appointments = await dbcontext.Appointment.AsTracking().Include(x => x.Schedule).Where(x => !x.IsDeleted && !x.ReminderFlag && x.Schedule.Date == tomorrow).ToListAsync();
             if (!appointments.Any()) return;
 
             var dentist = dentistrepo.GetAll().FirstOrDefault();
 
             foreach(var apt in appointments)
             {
-                string subject = "Appointment Reminder";
-                string body = $"Hello {apt.PatientName},\n\n" +
-                    $"this is a reminder you have an appointment tomorrow. \n\n" +
-                    $"Subject: {apt.Subject}.\n" +
-                    $"Date: {apt.Schedule.Date}.\n" +
-                    $"Time: {apt.SlotStartTime:hh\\:mm}\n\n";
+                try
+                {
+                    string subject = "Appointment Reminder";
+                    string body = $"Hello {apt.PatientName},\n\n" +
+                        $"this is a reminder you have an appointment tomorrow. \n\n" +
+                        $"Subject: {apt.Subject}.\n" +
+                        $"Date: {apt.Schedule.Date}.\n" +
+                        $"Time: {apt.SlotStartTime:hh\\:mm}\n\n";
 
-                await emailsender.SendEmailAsync(apt.Email, subject, body);
+                    await emailsender.SendEmailAsync(apt.Email, subject, body);
+                }
+                catch
+                {
+
+                }
                 apt.ReminderFlag = true;
             }
 
