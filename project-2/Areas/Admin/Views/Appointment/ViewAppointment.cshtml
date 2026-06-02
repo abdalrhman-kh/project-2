@@ -383,6 +383,8 @@
                     cancelButtonColor: "#d33",
                     confirmButtonText: "Yes, delete it!"
                     }).then( async (result) => {
+                        document.getElementById("editbtn").disabled = true;
+                        document.getElementById("deletebtn").disabled = true;
                         if (result.isConfirmed){
                             const response = await fetch(`/Admin/appointment/DeleteApt?id=${id}`,{
                                 method:"POST"
@@ -405,6 +407,8 @@
                             }
                         }
                     });
+                    document.getElementById("editbtn").disabled = false;
+                    document.getElementById("deletebtn").disabled = false;
             }
             async function ConfirmAdd(){
                     event.preventDefault();

@@ -66,7 +66,6 @@ namespace project_2.Controllers
             {
                 SubjectList = new List<SelectListItem>
                 {
-                    new SelectListItem { Text = "-- Chose --", Value = "-- Chose --" },
                     new SelectListItem { Text = "Dental Check-up", Value = "Dental Check-up" },
                     new SelectListItem { Text = "Teeth Cleaning", Value = "Teeth Cleaning" },
                     new SelectListItem { Text = "Tooth Filling", Value = "Tooth Filling" },

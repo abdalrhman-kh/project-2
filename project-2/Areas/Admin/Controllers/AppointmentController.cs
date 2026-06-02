@@ -306,7 +306,6 @@ namespace project_2.Areas.Admin.Controllers
 
             return Json(slots);
         }
-
         [HttpGet]
         public async Task<IActionResult> GetStats()
         {

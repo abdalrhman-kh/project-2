@@ -378,13 +378,15 @@
 							});
 							slotSelect.disabled = false;
 						});
-						const option = document.createElement("option");
-						option.value = currentTime;
-						option.text = currentTime;
-						slotSelect.appendChild(option);
+						if(currentTime != null){
+							const option = document.createElement("option");
+							option.value = currentTime;
+							option.text = currentTime;
+							slotSelect.appendChild(option);
 
-						slotSelect.value = currentTime;
-						currentTime = null;
+							slotSelect.value = currentTime;
+							currentTime = null;
+						}
 				}
 			});
 		}
