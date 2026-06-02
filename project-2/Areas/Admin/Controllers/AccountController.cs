@@ -94,12 +94,7 @@ namespace project_2.Areas.Admin.Controllers
                     return View(model);
                 }
             }
-            else
-            {
-                ModelState.AddModelError("", "Something went wronge");
-                return View(model);
-            }
-
+            return View(model);
         }
         [HttpPost]
         public async Task<IActionResult> Login(LoginViewModel model)
